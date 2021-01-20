@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "function": {
+      "fetchFeed": [
+        "create",
+        "read",
+        "update"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-tsunamialert-dev-231250-authRole",
+      "UnauthRoleArn": "arn:aws:iam::320058899062:role/amplify-tsunamialert-dev-231250-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::320058899062:role/amplify-tsunamialert-dev-231250-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-tsunamialert-dev-231250-deployment",
+      "UnauthRoleName": "amplify-tsunamialert-dev-231250-unauthRole",
+      "StackName": "amplify-tsunamialert-dev-231250",
+      "StackId": "arn:aws:cloudformation:us-east-2:320058899062:stack/amplify-tsunamialert-dev-231250/ea6c3b50-5aee-11eb-827c-0a35195c4fe4",
+      "AmplifyAppId": "d2v8ldf9a3snf"
+    },
+    "categories": {
+      "auth": {
+        "tsunamialertaa8d88b2": {}
+      }
+    }
+  }
+}

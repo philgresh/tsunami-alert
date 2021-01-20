@@ -1,0 +1,24 @@
+type Phone
+  @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
+  @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  number: String!
+  verificationCode: String
+  verified: Boolean!
+  subscribed: Boolean!
+}
+
+type Alert
+  @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
+  @key(fields: ["pubDate"])
+  @auth(
+    rules: [
+      { allow: groups, groups: ["admin"] }
+      { allow: private, operations: [read], provider: userPools }
+    ]
+  ) {
+  id: String!
+  title: String!
+  link: String!
+  pubDate: AWSDateTime!
+}
