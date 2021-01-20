@@ -2,13 +2,14 @@ type Phone
   @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
   @key(fields: ["id"])
   @key(fields: ["owner"], name: "byOwner")
+  @key(fields: ["number"], name: "byNumber")
   @auth(rules: [{ allow: owner }]) {
   id: ID!
   owner: String
   number: String!
   verificationCode: String
-  verified: Boolean!
-  subscribed: Boolean!
+  verified: Boolean
+  subscribed: Boolean
 }
 
 type Alert
