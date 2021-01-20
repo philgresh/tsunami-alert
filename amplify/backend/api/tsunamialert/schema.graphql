@@ -1,7 +1,10 @@
 type Phone
   @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
+  @key(fields: ["id"])
+  @key(fields: ["owner"], name: "byOwner")
   @auth(rules: [{ allow: owner }]) {
   id: ID!
+  owner: String
   number: String!
   verificationCode: String
   verified: Boolean!
@@ -10,14 +13,15 @@ type Phone
 
 type Alert
   @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
-  @key(fields: ["id", "pubDate"])
+  @key(fields: ["id"])
+  @key(fields: ["pubDate"], name: "byPubDate")
   @auth(
     rules: [
       { allow: groups, groups: ["admin"] }
       { allow: private, operations: [read], provider: userPools }
     ]
   ) {
-  id: String!
+  id: ID!
   title: String!
   link: String!
   pubDate: AWSDateTime!

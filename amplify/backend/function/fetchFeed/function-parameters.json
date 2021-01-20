@@ -1,11 +1,12 @@
 {
-  "lambdaLayers": [],
   "permissions": {
     "storage": {
       "Alert:@model(appsync)": [
+        "create",
         "read",
         "update"
       ]
     }
-  }
+  },
+  "lambdaLayers": []
 }

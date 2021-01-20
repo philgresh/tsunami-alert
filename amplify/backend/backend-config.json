@@ -1,6 +1,6 @@
 {
   "auth": {
-    "tsunamialertaa8d88b2": {
+    "tsunamialert97a1c8ba": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -16,7 +16,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authtsunamialertaa8d88b2"
+              "userPoolId": "authtsunamialert97a1c8ba"
             }
           },
           "additionalAuthenticationProviders": []

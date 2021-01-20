@@ -8,13 +8,13 @@ export const createPhone = /* GraphQL */ `
   ) {
     createPhone(input: $input, condition: $condition) {
       id
+      owner
       number
       verificationCode
       verified
       subscribed
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -25,13 +25,13 @@ export const updatePhone = /* GraphQL */ `
   ) {
     updatePhone(input: $input, condition: $condition) {
       id
+      owner
       number
       verificationCode
       verified
       subscribed
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -42,13 +42,13 @@ export const deletePhone = /* GraphQL */ `
   ) {
     deletePhone(input: $input, condition: $condition) {
       id
+      owner
       number
       verificationCode
       verified
       subscribed
       createdAt
       updatedAt
-      owner
     }
   }
 `;

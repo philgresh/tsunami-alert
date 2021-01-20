@@ -75,8 +75,8 @@
         "Layers": [],
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-tsunamialert-dev-231250-deployment",
-          "S3Key": "amplify-builds/checkFeeds-56574471654d426c5161-build.zip"
+          "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
+          "S3Key": "amplify-builds/checkFeeds-683573354c4e47505074-build.zip"
         }
       }
     },
@@ -86,12 +86,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "tsunamialertLambdaRole37ad152e",
+            "tsunamialertLambdaRole8a23839d",
             {
               "Fn::Join": [
                 "",
                 [
-                  "tsunamialertLambdaRole37ad152e",
+                  "tsunamialertLambdaRole8a23839d",
                   "-",
                   {
                     "Ref": "env"

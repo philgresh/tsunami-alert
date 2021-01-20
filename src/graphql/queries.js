@@ -5,40 +5,48 @@ export const getPhone = /* GraphQL */ `
   query GetPhone($id: ID!) {
     getPhone(id: $id) {
       id
+      owner
       number
       verificationCode
       verified
       subscribed
       createdAt
       updatedAt
-      owner
     }
   }
 `;
 export const listPhones = /* GraphQL */ `
   query ListPhones(
+    $id: ID
     $filter: ModelPhoneFilterInput
     $limit: Int
     $nextToken: String
+    $sortDirection: ModelSortDirection
   ) {
-    listPhones(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listPhones(
+      id: $id
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      sortDirection: $sortDirection
+    ) {
       items {
         id
+        owner
         number
         verificationCode
         verified
         subscribed
         createdAt
         updatedAt
-        owner
       }
       nextToken
     }
   }
 `;
 export const getAlert = /* GraphQL */ `
-  query GetAlert($pubDate: AWSDateTime!) {
-    getAlert(pubDate: $pubDate) {
+  query GetAlert($id: ID!) {
+    getAlert(id: $id) {
       id
       title
       link
@@ -50,14 +58,14 @@ export const getAlert = /* GraphQL */ `
 `;
 export const listAlerts = /* GraphQL */ `
   query ListAlerts(
-    $pubDate: AWSDateTime
+    $id: ID
     $filter: ModelAlertFilterInput
     $limit: Int
     $nextToken: String
     $sortDirection: ModelSortDirection
   ) {
     listAlerts(
-      pubDate: $pubDate
+      id: $id
       filter: $filter
       limit: $limit
       nextToken: $nextToken

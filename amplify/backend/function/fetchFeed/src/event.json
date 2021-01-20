@@ -1,3 +1,5 @@
 {
-  "url": "https://www.tsunami.gov/events/xml/PHEBAtom.xml"
+  "key1": "value1",
+  "key2": "value2",
+  "key3": "value3"
 }

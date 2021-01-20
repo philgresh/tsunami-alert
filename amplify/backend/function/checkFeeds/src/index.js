@@ -5,6 +5,7 @@
 Amplify Params - DO NOT EDIT */
 
 const AWS = require('aws-sdk');
+const FUNCTION_FETCHFEED_NAME = process.env.FUNCTION_FETCHFEED_NAME;
 
 AWS.config.update({ region: process.env.REGION });
 
@@ -15,7 +16,7 @@ var lambda = new AWS.Lambda({
 const PWTC_ATOM = 'https://www.tsunami.gov/events/xml/PHEBAtom.xml';
 // const NTWC_ATOM = 'https://www.tsunami.gov/events/xml/PAAQAtom.xml';
 
-exports.handler = async (_event) => {
+exports.handler = async (_event, context) => {
   lambda.invoke(
     {
       FunctionName: FUNCTION_FETCHFEED_NAME,
@@ -25,8 +26,8 @@ exports.handler = async (_event) => {
       if (error) {
         context.done('error', error);
       }
-      if (data.Payload) {
-        context.succeed(data.Payload);
+      if (data) {
+        context.succeed(data);
       }
     },
   );
