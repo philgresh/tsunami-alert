@@ -9,6 +9,10 @@
     },
     "env": {
       "Type": "String"
+    },
+    "apitsunamialertGraphQLAPIIdOutput": {
+      "Type": "String",
+      "Default": "apitsunamialertGraphQLAPIIdOutput"
     }
   },
   "Conditions": {
@@ -55,6 +59,35 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
+            },
+            "API_TSUNAMIALERT_ALERTTABLE_NAME": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${apitsunamialertGraphQLAPIIdOutput}:GetAtt:AlertTable:Name"
+              }
+            },
+            "API_TSUNAMIALERT_ALERTTABLE_ARN": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:dynamodb:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":table/",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${apitsunamialertGraphQLAPIIdOutput}:GetAtt:AlertTable:Name"
+                    }
+                  }
+                ]
+              ]
+            },
+            "API_TSUNAMIALERT_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apitsunamialertGraphQLAPIIdOutput"
             }
           }
         },
@@ -69,7 +102,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-tsunamialert-dev-231250-deployment",
-          "S3Key": "amplify-builds/fetchFeed-585867567a4631487850-build.zip"
+          "S3Key": "amplify-builds/fetchFeed-7a4835635875484d574a-build.zip"
         }
       }
     },
@@ -150,6 +183,83 @@
                   }
                 ]
               }
+            }
+          ]
+        }
+      }
+    },
+    "AmplifyResourcesPolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:Update*",
+                "dynamodb:RestoreTable*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Fn::ImportValue": {
+                          "Fn::Sub": "${apitsunamialertGraphQLAPIIdOutput}:GetAtt:AlertTable:Name"
+                        }
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Fn::ImportValue": {
+                          "Fn::Sub": "${apitsunamialertGraphQLAPIIdOutput}:GetAtt:AlertTable:Name"
+                        }
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ]
         }

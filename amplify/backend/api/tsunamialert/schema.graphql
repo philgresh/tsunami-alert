@@ -10,7 +10,7 @@ type Phone
 
 type Alert
   @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
-  @key(fields: ["pubDate"])
+  @key(fields: ["id", "pubDate"])
   @auth(
     rules: [
       { allow: groups, groups: ["admin"] }
