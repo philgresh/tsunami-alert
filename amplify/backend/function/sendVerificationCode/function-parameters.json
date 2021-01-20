@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "storage": {
+      "Phone:@model(appsync)": [
+        "read",
+        "update"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

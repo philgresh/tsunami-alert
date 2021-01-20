@@ -52,6 +52,41 @@
           ]
         }
       ]
+    },
+    "sendVerificationCode": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "tsunamialert",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        }
+      ]
+    },
+    "onPhoneCreate": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "sendVerificationCode",
+          "attributes": [
+            "Name"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "tsunamialert",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        }
+      ]
     }
   },
   "hosting": {

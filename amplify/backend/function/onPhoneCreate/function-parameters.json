@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "function": {
+      "sendVerificationCode": [
+        "read",
+        "update"
+      ]
+    },
+    "storage": {
+      "Phone:@model(appsync)": [
+        "read",
+        "update"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}
