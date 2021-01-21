@@ -6,16 +6,8 @@
 	REGION
 Amplify Params - DO NOT EDIT */
 
-const AWS = require('aws-sdk');
-const { promisify } = require('es6-promisify');
-
-AWS.config.update({ region: process.env.REGION });
-
-const sns = new AWS.SNS({
-  apiVersion: '2010-03-31',
-  region: process.env.REGION,
-});
-const publishPromise = promisify(sns.publish.bind(sns));
+const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
+const REGION = process.env.REGION; 
 
 exports.handler = (event) => {
   console.log({ event });
@@ -24,22 +16,22 @@ exports.handler = (event) => {
     randInt,
   } = event;
 
-  const Message = `Your verification code is: ${randInt}`;
+  const Message = `Your verification code for tsunami alerts is: ${randInt}`;
 
   const params = {
-    Message /* required */,
-    MessageAttributes: {
-      DataType: 'String' /* required */,
-    },
-    PhoneNumber: number,
-    TopicArn: process.env.SNS_TOPIC_ARN,
+    Message,
+    PhoneNumber: number, //PHONE_NUMBER, in the E.164 phone number structure
   };
 
-  return publishPromise(params)
-    .then(function (data) {
-      console.log('MessageID is ' + data.MessageId);
-    })
-    .catch(function (err) {
+  const sns = new SNSClient({ region: REGION });
+
+  const run = async () => {
+    try {
+      const data = await sns.send(new PublishCommand(params));
+      console.log('Success, message published. MessageID is ' + data.MessageId);
+    } catch (err) {
       console.error(err, err.stack);
-    });
+    }
+  };
+  run();
 };

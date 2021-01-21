@@ -58,6 +58,7 @@ exports.handler = async (event) => {
 async function prepUpdatePromise(id) {
   const randInt = await genRandInt();
   const hashDigest = genHashDigest(randInt.toString());
+  const now = new Date().toISOString();
 
   console.log('Generated random integer and hash', { id, randInt, hashDigest });
 
@@ -66,6 +67,7 @@ async function prepUpdatePromise(id) {
       '#C': 'verificationCode',
       '#V': 'verified',
       '#S': 'subscribed',
+      '#U': 'updatedAt',
     },
     ExpressionAttributeValues: {
       ':c': {
@@ -77,6 +79,9 @@ async function prepUpdatePromise(id) {
       ':s': {
         BOOL: false,
       },
+      ':u': {
+        S: now,
+      },
     },
     Key: {
       id: {
@@ -85,7 +90,7 @@ async function prepUpdatePromise(id) {
     },
     ReturnValues: 'ALL_NEW',
     TableName: TABLE_NAME,
-    UpdateExpression: 'SET #C = :c, #V = :v, #S = :s',
+    UpdateExpression: 'SET #C = :c, #V = :v, #S = :s, #U = :u',
   };
 
   return updatePromise(params)
