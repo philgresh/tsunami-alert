@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import Amplify from 'aws-amplify';
 import awsExports from './aws-exports';
 import App from './App';
@@ -13,7 +14,9 @@ Amplify.configure(awsExports);
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
