@@ -12,8 +12,12 @@ const { promisify } = require('es6-promisify');
 const randomNumber = require('random-number-csprng');
 const crypto = require('crypto');
 
+const hash = crypto.createHash('sha256');
+
 const INSERT = 'INSERT';
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
+const SEND_VERIFICATION_CODE_LAMBDA =
+  process.env.FUNCTION_SENDVERIFICATIONCODE_NAME;
 
 AWS.config.update({ region: process.env.REGION });
 
@@ -22,8 +26,13 @@ const dynamodb = new AWS.DynamoDB({
   region: process.env.REGION,
 });
 
+const lambda = new AWS.Lambda({
+  region: process.env.REGION,
+});
+
 const { unmarshall } = AWS.DynamoDB.Converter;
 const updatePromise = promisify(dynamodb.updateItem.bind(dynamodb));
+const invokePromise = promisify(lambda.invoke.bind(lambda));
 
 exports.handler = async (event) => {
   const insertions = event.Records.filter(
@@ -37,32 +46,36 @@ exports.handler = async (event) => {
   return Promise.all(
     insertions.map(async function (record) {
       const data = unmarshall(record.dynamodb.NewImage);
-      const [randInt, newPromise] = await prepUpdatePromise(data.id);
-      return newPromise;
+      return prepUpdatePromise(data.id);
     }),
   )
     .then((res) => {
-      console.log('Successfully processed records', { res });
+      console.log('Processed records', { res });
     })
     .catch((err) => console.error(err));
 };
 
 async function prepUpdatePromise(id) {
-  const hash = crypto.createHash('sha256');
-
   const randInt = await genRandInt();
+  const hashDigest = genHashDigest(randInt.toString());
 
-  const hashDigest = hash.update(randInt.toString()).digest('hex');
-
-  console.log('prep', { id, randInt, hashDigest });
+  console.log('Generated random integer and hash', { id, randInt, hashDigest });
 
   const params = {
     ExpressionAttributeNames: {
-      '#V': 'verificationCode',
+      '#C': 'verificationCode',
+      '#V': 'verified',
+      '#S': 'subscribed',
     },
     ExpressionAttributeValues: {
-      ':v': {
+      ':c': {
         S: hashDigest,
+      },
+      ':v': {
+        BOOL: false,
+      },
+      ':s': {
+        BOOL: false,
       },
     },
     Key: {
@@ -70,24 +83,38 @@ async function prepUpdatePromise(id) {
         S: id,
       },
     },
-    ReturnValues: 'UPDATED_NEW',
+    ReturnValues: 'ALL_NEW',
     TableName: TABLE_NAME,
-    UpdateExpression: 'SET #V = :v',
+    UpdateExpression: 'SET #C = :c, #V = :v, #S = :s',
   };
 
-  const newPromise = updatePromise(params)
-    .then((res) => {
+  return updatePromise(params)
+    .then(async (res) => {
+      const record = unmarshall(res.Attributes);
       console.log(
         `Successfully updated ${id}:`,
-        JSON.stringify({ attrs: res.Attributes }, null, 2),
+        JSON.stringify({ record }, null, 2),
       );
-      return res;
+
+      const Payload = JSON.stringify({ record, randInt }, null, 2);
+      const response = await invokePromise({
+        Payload,
+        FunctionName: SEND_VERIFICATION_CODE_LAMBDA,
+      })
+        .then((result) => result)
+        .catch((err) => {
+          console.error(err);
+          return err;
+        });
+      console.log(
+        'Successfully forwarded to sendVerificationCode lambda',
+        JSON.stringify({ response }, null, 2),
+      );
     })
     .catch((err) => {
       console.error(err);
       return err;
     });
-  return [randInt, newPromise];
 }
 
 async function genRandInt() {
@@ -97,4 +124,8 @@ async function genRandInt() {
   } catch (err) {
     return console.error('Error generating random integer: ', err);
   }
+}
+
+function genHashDigest(str) {
+  return hash.update(str).digest('hex');
 }

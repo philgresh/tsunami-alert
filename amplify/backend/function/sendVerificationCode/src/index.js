@@ -11,14 +11,35 @@ const { promisify } = require('es6-promisify');
 
 AWS.config.update({ region: process.env.REGION });
 
-const dynamodb = new AWS.DynamoDB({
-  apiVersion: '2012-08-10',
+const sns = new AWS.SNS({
+  apiVersion: '2010-03-31',
   region: process.env.REGION,
 });
+const publishPromise = promisify(sns.publish.bind(sns));
 
+exports.handler = (event) => {
+  console.log({ event });
+  const {
+    record: { number },
+    randInt,
+  } = event;
 
-exports.handler = async (event) => {
-  console.log({event})
-  const getItemPromise = promisify(dynamodb.getItem.bind(dynamodb));
+  const Message = `Your verification code is: ${randInt}`;
 
+  const params = {
+    Message /* required */,
+    MessageAttributes: {
+      DataType: 'String' /* required */,
+    },
+    PhoneNumber: number,
+    TopicArn: process.env.SNS_TOPIC_ARN,
+  };
+
+  return publishPromise(params)
+    .then(function (data) {
+      console.log('MessageID is ' + data.MessageId);
+    })
+    .catch(function (err) {
+      console.error(err, err.stack);
+    });
 };

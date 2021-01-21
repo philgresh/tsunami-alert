@@ -113,7 +113,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/onPhoneCreate-76324c37667a32425a77-build.zip"
+          "S3Key": "amplify-builds/onPhoneCreate-6836324e41415a624170-build.zip"
         }
       }
     },
