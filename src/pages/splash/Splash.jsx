@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from './logo.svg';
 import { Counter } from '../../features/counter/Counter';
 import './splash.css';
@@ -7,6 +8,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <Link to="/signin">Sign In</Link>
         <img src={logo} className="App-logo" alt="logo" />
         <Counter />
         <p>

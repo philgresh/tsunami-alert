@@ -5,17 +5,6 @@ import awsmobile from './aws-exports';
 import PublicRoutes from './routes/PublicRoutes';
 import PrivateRoutes from './routes/PrivateRoutes';
 
-const awsconfig = {
-  ...awsmobile,
-  oath: {
-    // redirectSignIn: 'http://localhost:3000/signedin',
-    // redirectSignOut: 'http://localhost:3000/signedout',
-    ...awsmobile.oath,
-  },
-};
-
-Amplify.configure(awsconfig);
-
 const AuthStateApp = () => {
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
