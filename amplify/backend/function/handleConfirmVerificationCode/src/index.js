@@ -6,6 +6,8 @@
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */
+const AWS = require('aws-sdk');
+const { promisify } = require('es6-promisify');
 const crypto = require('crypto');
 
 const hash = crypto.createHash('sha256');
@@ -21,12 +23,14 @@ const dynamodb = new AWS.DynamoDB({
 const { unmarshall } = AWS.DynamoDB.Converter;
 const updatePromise = promisify(dynamodb.updateItem.bind(dynamodb));
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   const { id, verificationCode } = event.arguments;
+  const {sub: ownerSub} = event.identity;
   if (!id || !verificationCode)
     throw Error('Did not provide correct information!');
 
   const hashDigest = genHashDigest(verificationCode);
+  const now = new Date().toISOString();
 
   const params = {
     TableName: TABLE_NAME,
@@ -40,6 +44,7 @@ exports.handler = async (event, context) => {
       '#V': 'verified',
       '#S': 'subscribed',
       '#U': 'updatedAt',
+      '#O': 'owner'
     },
     ExpressionAttributeValues: {
       ':c': {
@@ -51,6 +56,9 @@ exports.handler = async (event, context) => {
       ':s': {
         BOOL: true,
       },
+      ':o': {
+        S: ownerSub
+      },
       ':u': {
         S: now,
       },
@@ -61,7 +69,7 @@ exports.handler = async (event, context) => {
     },
     ReturnValues: 'ALL_NEW',
     UpdateExpression: 'SET #C = :c, #V = :v, #S = :s, #U = :u',
-    ConditionExpression: 'attribute_exists(#C) AND #C = :cc',
+    ConditionExpression: '#O = :o AND attribute_exists(#C) AND #C = :cc',
   };
 
   return updatePromise(params)
@@ -75,7 +83,7 @@ exports.handler = async (event, context) => {
     })
     .catch((err) => {
       console.error({ err });
-      throw new Error(err.message);
+      return err;
     });
 };
 

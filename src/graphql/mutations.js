@@ -3,7 +3,13 @@
 
 export const confirmPhone = /* GraphQL */ `
   mutation ConfirmPhone($id: ID!, $verificationCode: String!) {
-    confirmPhone(id: $id, verificationCode: $verificationCode)
+    confirmPhone(id: $id, verificationCode: $verificationCode) {
+      id
+      owner
+      number
+      verified
+      subscribed
+    }
   }
 `;
 export const createPhone = /* GraphQL */ `
