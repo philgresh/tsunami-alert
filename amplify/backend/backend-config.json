@@ -36,6 +36,13 @@
           "attributes": [
             "GraphQLAPIIdOutput"
           ]
+        },
+        {
+          "category": "function",
+          "resourceName": "tsunamiSharedLayer",
+          "attributes": [
+            "Arn"
+          ]
         }
       ]
     },
@@ -50,6 +57,13 @@
           "attributes": [
             "Name"
           ]
+        },
+        {
+          "category": "function",
+          "resourceName": "tsunamiSharedLayer",
+          "attributes": [
+            "Arn"
+          ]
         }
       ]
     },
@@ -63,6 +77,13 @@
           "resourceName": "tsunamialert",
           "attributes": [
             "GraphQLAPIIdOutput"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "tsunamiSharedLayer",
+          "attributes": [
+            "Arn"
           ]
         }
       ]
@@ -85,8 +106,48 @@
           "attributes": [
             "GraphQLAPIIdOutput"
           ]
+        },
+        {
+          "category": "function",
+          "resourceName": "tsunamiSharedLayer",
+          "attributes": [
+            "Arn"
+          ]
         }
       ]
+    },
+    "handleConfirmVerificationCode": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "tsunamialert97a1c8ba",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "tsunamialert",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "tsunamiSharedLayer",
+          "attributes": [
+            "Arn"
+          ]
+        }
+      ]
+    },
+    "tsunamiSharedLayer": {
+      "providerPlugin": "awscloudformation",
+      "service": "LambdaLayer",
+      "build": true
     }
   },
   "hosting": {

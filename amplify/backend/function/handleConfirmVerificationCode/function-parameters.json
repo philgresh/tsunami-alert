@@ -1,9 +1,8 @@
 {
   "permissions": {
-    "function": {
-      "sendVerificationCode": [
-        "read",
-        "update"
+    "auth": {
+      "tsunamialert97a1c8ba": [
+        "read"
       ]
     },
     "storage": {

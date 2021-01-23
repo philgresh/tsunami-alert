@@ -13,6 +13,10 @@
     "apitsunamialertGraphQLAPIIdOutput": {
       "Type": "String",
       "Default": "apitsunamialertGraphQLAPIIdOutput"
+    },
+    "functiontsunamiSharedLayerArn": {
+      "Type": "String",
+      "Default": "functiontsunamiSharedLayerArn"
     }
   },
   "Conditions": {
@@ -98,7 +102,11 @@
           ]
         },
         "Runtime": "nodejs12.x",
-        "Layers": [],
+        "Layers": [
+          {
+            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:tsunamiSharedLayer-dev:1"
+          }
+        ],
         "MemorySize": 1024,
         "Timeout": "25",
         "Code": {

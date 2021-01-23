@@ -1,6 +1,11 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const confirmPhone = /* GraphQL */ `
+  mutation ConfirmPhone($id: ID!, $verificationCode: String!) {
+    confirmPhone(id: $id, verificationCode: $verificationCode)
+  }
+`;
 export const createPhone = /* GraphQL */ `
   mutation CreatePhone(
     $input: CreatePhoneInput!

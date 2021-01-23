@@ -20,6 +20,28 @@
           "appId": "d1rym4z0g6pr2u",
           "type": "manual"
         }
+      },
+      "function": {
+        "tsunamiSharedLayer": {
+          "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
+          "s3Key": "amplify-builds/tsunamiSharedLayer-build.zip"
+        }
+      }
+    },
+    "nonCFNdata": {
+      "function": {
+        "tsunamiSharedLayer": {
+          "layerVersionMap": {
+            "1": {
+              "permissions": [
+                {
+                  "type": "private"
+                }
+              ],
+              "hash": "6q3ClFTf8wlgfKhTJK2qZxcOBq4zZHn6YCqiFL2p6oI="
+            }
+          }
+        }
       }
     }
   }

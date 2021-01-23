@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.3.0",
+    "aws-sdk": "^2.831.0",
+    "es6-promisify": "^6.1.1",
+    "random-number-csprng": "^1.0.2",
+    "rss-parser": "^3.10.0"
+  },
+  "devDependencies": {}
+}

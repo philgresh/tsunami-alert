@@ -10,17 +10,13 @@
     "env": {
       "Type": "String"
     },
+    "authtsunamialert97a1c8baUserPoolId": {
+      "Type": "String",
+      "Default": "authtsunamialert97a1c8baUserPoolId"
+    },
     "apitsunamialertGraphQLAPIIdOutput": {
       "Type": "String",
       "Default": "apitsunamialertGraphQLAPIIdOutput"
-    },
-    "apitsunamialertGraphQLAPIEndpointOutput": {
-      "Type": "String",
-      "Default": "apitsunamialertGraphQLAPIEndpointOutput"
-    },
-    "functionsendVerificationCodeName": {
-      "Type": "String",
-      "Default": "functionsendVerificationCodeName"
     },
     "functiontsunamiSharedLayerArn": {
       "Type": "String",
@@ -49,12 +45,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "onPhoneCreate",
+            "handleConfirmVerificationCode",
             {
               "Fn::Join": [
                 "",
                 [
-                  "onPhoneCreate",
+                  "handleConfirmVerificationCode",
                   "-",
                   {
                     "Ref": "env"
@@ -72,8 +68,8 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "FUNCTION_SENDVERIFICATIONCODE_NAME": {
-              "Ref": "functionsendVerificationCodeName"
+            "AUTH_TSUNAMIALERT97A1C8BA_USERPOOLID": {
+              "Ref": "authtsunamialert97a1c8baUserPoolId"
             },
             "API_TSUNAMIALERT_PHONETABLE_NAME": {
               "Fn::ImportValue": {
@@ -121,7 +117,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/onPhoneCreate-7144745552384d53592b-build.zip"
+          "S3Key": "amplify-builds/handleConfirmVerificationCode-684b4a77437549594232-build.zip"
         }
       }
     },
@@ -131,12 +127,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "tsunamialertLambdaRole8d61fe0e",
+            "tsunamialertLambdaRoleb8ce931c",
             {
               "Fn::Join": [
                 "",
                 [
-                  "tsunamialertLambdaRole8d61fe0e",
+                  "tsunamialertLambdaRoleb8ce931c",
                   "-",
                   {
                     "Ref": "env"
@@ -225,17 +221,27 @@
             {
               "Effect": "Allow",
               "Action": [
-                "lambda:Get*",
-                "lambda:List*",
-                "lambda:Invoke*",
-                "lambda:Update*"
+                "cognito-identity:Describe*",
+                "cognito-identity:Get*",
+                "cognito-identity:List*",
+                "cognito-idp:Describe*",
+                "cognito-idp:AdminGetDevice",
+                "cognito-idp:AdminGetUser",
+                "cognito-idp:AdminList*",
+                "cognito-idp:List*",
+                "cognito-sync:Describe*",
+                "cognito-sync:Get*",
+                "cognito-sync:List*",
+                "iam:ListOpenIdConnectProviders",
+                "iam:ListRoles",
+                "sns:ListPlatformApplications"
               ],
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:lambda:",
+                      "arn:aws:cognito-idp:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -243,9 +249,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":function:",
+                      ":userpool/",
                       {
-                        "Ref": "functionsendVerificationCodeName"
+                        "Ref": "authtsunamialert97a1c8baUserPoolId"
                       }
                     ]
                   ]
@@ -312,62 +318,6 @@
             }
           ]
         }
-      }
-    },
-    "LambdaTriggerPolicyPhone": {
-      "DependsOn": [
-        "LambdaExecutionRole"
-      ],
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": "amplify-lambda-execution-policy-Phone",
-        "Roles": [
-          {
-            "Ref": "LambdaExecutionRole"
-          }
-        ],
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:ListStreams"
-              ],
-              "Resource": {
-                "Fn::ImportValue": {
-                  "Fn::Sub": "${apitsunamialertGraphQLAPIIdOutput}:GetAtt:PhoneTable:StreamArn"
-                }
-              }
-            }
-          ]
-        }
-      }
-    },
-    "LambdaEventSourceMappingPhone": {
-      "Type": "AWS::Lambda::EventSourceMapping",
-      "DependsOn": [
-        "LambdaTriggerPolicyPhone",
-        "LambdaExecutionRole"
-      ],
-      "Properties": {
-        "BatchSize": 100,
-        "Enabled": true,
-        "EventSourceArn": {
-          "Fn::ImportValue": {
-            "Fn::Sub": "${apitsunamialertGraphQLAPIIdOutput}:GetAtt:PhoneTable:StreamArn"
-          }
-        },
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "LambdaFunction",
-            "Arn"
-          ]
-        },
-        "StartingPosition": "LATEST"
       }
     }
   },

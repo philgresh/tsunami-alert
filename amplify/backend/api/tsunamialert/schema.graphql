@@ -27,3 +27,7 @@ type Alert
   link: String!
   pubDate: AWSDateTime!
 }
+
+type Mutation {
+  confirmPhone(id: ID!, verificationCode: String!): Boolean @function(name: "handleConfirmVerificationCode-${env}")
+}
