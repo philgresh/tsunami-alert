@@ -25,6 +25,10 @@
     "functiontsunamiSharedLayerArn": {
       "Type": "String",
       "Default": "functiontsunamiSharedLayerArn"
+    },
+    "functionsendVerificationCodeName": {
+      "Type": "String",
+      "Default": "functionsendVerificationCodeName"
     }
   },
   "Conditions": {
@@ -106,6 +110,9 @@
                   }
                 ]
               ]
+            },
+            "FUNCTION_SENDVERIFICATIONCODE_NAME": {
+              "Ref": "functionsendVerificationCodeName"
             }
           }
         },
@@ -124,7 +131,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/createPhone-42514e4c5662576b5236-build.zip"
+          "S3Key": "amplify-builds/createPhone-6a6f49366c5846796f68-build.zip"
         }
       }
     },
@@ -289,6 +296,36 @@
                         "Ref": "apitsunamialertGraphQLAPIIdOutput"
                       },
                       "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "lambda:Get*",
+                "lambda:List*",
+                "lambda:Invoke*",
+                "lambda:Update*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:lambda:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":function:",
+                      {
+                        "Ref": "functionsendVerificationCodeName"
+                      }
                     ]
                   ]
                 }

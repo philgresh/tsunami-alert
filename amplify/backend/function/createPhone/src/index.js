@@ -5,6 +5,7 @@
 	API_TSUNAMIALERT_PHONETABLE_NAME
 	AUTH_TSUNAMIALERT97A1C8BA_USERPOOLID
 	ENV
+	FUNCTION_SENDVERIFICATIONCODE_NAME
 	REGION
 Amplify Params - DO NOT EDIT */
 
@@ -12,8 +13,6 @@ const AWS = require('aws-sdk');
 const { promisify } = require('es6-promisify');
 const randomNumber = require('random-number-csprng');
 const crypto = require('crypto');
-
-const hash = crypto.createHash('sha256');
 
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
 const SEND_VERIFICATION_CODE_LAMBDA =
@@ -45,76 +44,46 @@ exports.handler = async (event, ctx) => {
   const randInt = await genRandInt();
   const verificationCode = genHashDigest(randInt.toString());
   const now = new Date().toISOString();
-  const id = genHashDigest(number);
+  const id = genHashDigest(number).slice(0, 36); // No need for super long IDs, same length as a UUID
 
   const params = {
     TableName: TABLE_NAME,
     Item: {
-      id,
-      number,
-      owner,
-      verificationCode,
-      verified: false,
-      subscribed: false,
-      updatedAt: now,
-      createdAt: now,
+      id: {
+        S: id,
+      },
+      number: {
+        S: number,
+      },
+      owner: {
+        S: owner,
+      },
+      verificationCode: {
+        S: verificationCode,
+      },
+      verified: {
+        BOOL: false,
+      },
+      subscribed: {
+        BOOL: false,
+      },
+      updatedAt: {
+        S: now,
+      },
+      createdAt: {
+        S: now,
+      },
     },
   };
 
-  console.log('Generated random integer and hash', { params });
-
-  // const params = {
-  //   ExpressionAttributeNames: {
-  //     "#O": 'owner',
-  //     "#N": 'number',
-  //     '#C': 'verificationCode',
-  //     '#V': 'verified',
-  //     '#S': 'subscribed',
-  //     '#UA': 'updatedAt',
-  //     '#CA': 'createdAt',
-  //   },
-  //   ExpressionAttributeValues: {
-  //     ':o': {
-  //       S: owner,
-  //     },
-  //     ':n': {
-  //       S: number,
-  //     },
-  //     ':c': {
-  //       S: verificationCode,
-  //     },
-  //     ':v': {
-  //       BOOL: false,
-  //     },
-  //     ':s': {
-  //       BOOL: false,
-  //     },
-  //     ':ua': {
-  //       S: now,
-  //     },
-  //     ':ca': {
-  //       S: now,
-  //     },
-  //   },
-  //   Key: {
-  //     id: {
-  //       S: id,
-  //     },
-  //   },
-  //   ReturnValues: 'ALL_NEW',
-  //   TableName: TABLE_NAME,
-  //   UpdateExpression: 'SET #C = :c, #V = :v, #S = :s, #UA = :ua, #CA = :ca',
-  // };
-
   return putPromise(params)
     .then(async (res) => {
-      const record = unmarshall(res.Attributes);
       console.log(
         `Successfully added ${id}:`,
-        JSON.stringify({ record }, null, 2),
+        JSON.stringify({ res }, null, 2),
       );
 
-      const Payload = JSON.stringify({ record, randInt }, null, 2);
+      const Payload = JSON.stringify({ record: { number }, randInt }, null, 2);
       const response = await invokePromise({
         Payload,
         FunctionName: SEND_VERIFICATION_CODE_LAMBDA,
@@ -145,5 +114,6 @@ async function genRandInt() {
 }
 
 function genHashDigest(str) {
+  const hash = crypto.createHash('sha256');
   return hash.update(str).digest('hex');
 }

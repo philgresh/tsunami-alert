@@ -171,9 +171,9 @@
         },
         {
           "category": "function",
-          "resourceName": "tsunamiSharedLayer",
+          "resourceName": "sendVerificationCode",
           "attributes": [
-            "Arn"
+            "Name"
           ]
         }
       ]

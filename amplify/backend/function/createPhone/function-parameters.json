@@ -10,6 +10,12 @@
         "read"
       ]
     },
+    "function": {
+      "sendVerificationCode": [
+        "read",
+        "update"
+      ]
+    },
     "storage": {
       "Phone:@model(appsync)": [
         "create",
