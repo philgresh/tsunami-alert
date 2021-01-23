@@ -148,6 +148,35 @@
       "providerPlugin": "awscloudformation",
       "service": "LambdaLayer",
       "build": true
+    },
+    "createPhone": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "tsunamialert97a1c8ba",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "tsunamialert",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "tsunamiSharedLayer",
+          "attributes": [
+            "Arn"
+          ]
+        }
+      ]
     }
   },
   "hosting": {

@@ -1,20 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreatePhone = /* GraphQL */ `
-  subscription OnCreatePhone($owner: String!) {
-    onCreatePhone(owner: $owner) {
-      id
-      owner
-      number
-      verificationCode
-      verified
-      subscribed
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onUpdatePhone = /* GraphQL */ `
   subscription OnUpdatePhone($owner: String!) {
     onUpdatePhone(owner: $owner) {
@@ -24,56 +10,6 @@ export const onUpdatePhone = /* GraphQL */ `
       verificationCode
       verified
       subscribed
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeletePhone = /* GraphQL */ `
-  subscription OnDeletePhone($owner: String!) {
-    onDeletePhone(owner: $owner) {
-      id
-      owner
-      number
-      verificationCode
-      verified
-      subscribed
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onCreateAlert = /* GraphQL */ `
-  subscription OnCreateAlert {
-    onCreateAlert {
-      id
-      title
-      link
-      pubDate
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateAlert = /* GraphQL */ `
-  subscription OnUpdateAlert {
-    onUpdateAlert {
-      id
-      title
-      link
-      pubDate
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteAlert = /* GraphQL */ `
-  subscription OnDeleteAlert {
-    onDeleteAlert {
-      id
-      title
-      link
-      pubDate
       createdAt
       updatedAt
     }

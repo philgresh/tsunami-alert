@@ -2,22 +2,13 @@
 // this is an auto generated file. This will be overwritten
 
 export const confirmPhone = /* GraphQL */ `
-  mutation ConfirmPhone($id: ID!, $verificationCode: String!) {
-    confirmPhone(id: $id, verificationCode: $verificationCode) {
-      id
-      owner
-      number
-      verified
-      subscribed
-    }
+  mutation ConfirmPhone($verificationCode: String!) {
+    confirmPhone(verificationCode: $verificationCode)
   }
 `;
 export const createPhone = /* GraphQL */ `
-  mutation CreatePhone(
-    $input: CreatePhoneInput!
-    $condition: ModelPhoneConditionInput
-  ) {
-    createPhone(input: $input, condition: $condition) {
+  mutation CreatePhone($number: String!) {
+    createPhone(number: $number) {
       id
       owner
       number
@@ -29,80 +20,18 @@ export const createPhone = /* GraphQL */ `
     }
   }
 `;
-export const updatePhone = /* GraphQL */ `
-  mutation UpdatePhone(
+export const update = /* GraphQL */ `
+  mutation Update(
     $input: UpdatePhoneInput!
     $condition: ModelPhoneConditionInput
   ) {
-    updatePhone(input: $input, condition: $condition) {
+    update(input: $input, condition: $condition) {
       id
       owner
       number
       verificationCode
       verified
       subscribed
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deletePhone = /* GraphQL */ `
-  mutation DeletePhone(
-    $input: DeletePhoneInput!
-    $condition: ModelPhoneConditionInput
-  ) {
-    deletePhone(input: $input, condition: $condition) {
-      id
-      owner
-      number
-      verificationCode
-      verified
-      subscribed
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const createAlert = /* GraphQL */ `
-  mutation CreateAlert(
-    $input: CreateAlertInput!
-    $condition: ModelAlertConditionInput
-  ) {
-    createAlert(input: $input, condition: $condition) {
-      id
-      title
-      link
-      pubDate
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const updateAlert = /* GraphQL */ `
-  mutation UpdateAlert(
-    $input: UpdateAlertInput!
-    $condition: ModelAlertConditionInput
-  ) {
-    updateAlert(input: $input, condition: $condition) {
-      id
-      title
-      link
-      pubDate
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deleteAlert = /* GraphQL */ `
-  mutation DeleteAlert(
-    $input: DeleteAlertInput!
-    $condition: ModelAlertConditionInput
-  ) {
-    deleteAlert(input: $input, condition: $condition) {
-      id
-      title
-      link
-      pubDate
       createdAt
       updatedAt
     }

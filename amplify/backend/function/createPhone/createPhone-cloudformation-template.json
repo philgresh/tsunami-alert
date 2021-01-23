@@ -18,6 +18,10 @@
       "Type": "String",
       "Default": "apitsunamialertGraphQLAPIIdOutput"
     },
+    "apitsunamialertGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apitsunamialertGraphQLAPIEndpointOutput"
+    },
     "functiontsunamiSharedLayerArn": {
       "Type": "String",
       "Default": "functiontsunamiSharedLayerArn"
@@ -45,12 +49,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "handleConfirmVerificationCode",
+            "createPhone",
             {
               "Fn::Join": [
                 "",
                 [
-                  "handleConfirmVerificationCode",
+                  "createPhone",
                   "-",
                   {
                     "Ref": "env"
@@ -70,6 +74,12 @@
             },
             "AUTH_TSUNAMIALERT97A1C8BA_USERPOOLID": {
               "Ref": "authtsunamialert97a1c8baUserPoolId"
+            },
+            "API_TSUNAMIALERT_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apitsunamialertGraphQLAPIIdOutput"
+            },
+            "API_TSUNAMIALERT_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apitsunamialertGraphQLAPIEndpointOutput"
             },
             "API_TSUNAMIALERT_PHONETABLE_NAME": {
               "Fn::ImportValue": {
@@ -96,9 +106,6 @@
                   }
                 ]
               ]
-            },
-            "API_TSUNAMIALERT_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "apitsunamialertGraphQLAPIIdOutput"
             }
           }
         },
@@ -117,7 +124,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/handleConfirmVerificationCode-4b2b597130766a644a4c-build.zip"
+          "S3Key": "amplify-builds/createPhone-42514e4c5662576b5236-build.zip"
         }
       }
     },
@@ -127,12 +134,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "tsunamialertLambdaRoleb8ce931c",
+            "tsunamialertLambdaRoled93666b4",
             {
               "Fn::Join": [
                 "",
                 [
-                  "tsunamialertLambdaRoleb8ce931c",
+                  "tsunamialertLambdaRoled93666b4",
                   "-",
                   {
                     "Ref": "env"
@@ -261,14 +268,44 @@
             {
               "Effect": "Allow",
               "Action": [
+                "appsync:Get*",
+                "appsync:List*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apitsunamialertGraphQLAPIIdOutput"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Put*",
+                "dynamodb:Create*",
+                "dynamodb:BatchWriteItem",
                 "dynamodb:Get*",
                 "dynamodb:BatchGetItem",
                 "dynamodb:List*",
                 "dynamodb:Describe*",
                 "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:Update*",
-                "dynamodb:RestoreTable*"
+                "dynamodb:Query"
               ],
               "Resource": [
                 {

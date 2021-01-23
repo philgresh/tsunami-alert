@@ -1,5 +1,5 @@
 type Phone
-  @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
+  @model(mutations: { update: "update" })
   @key(fields: ["id"])
   @key(fields: ["owner"], name: "byOwner")
   @key(fields: ["number"], name: "byNumber")
@@ -7,13 +7,13 @@ type Phone
   id: ID!
   owner: String
   number: String!
-  verificationCode: String
+  verificationCode: String @auth(rules: [{ allow: groups, groups: ["admin"] }])
   verified: Boolean
   subscribed: Boolean
 }
 
 type Alert
-  @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
+  @model(mutations: null)
   @key(fields: ["id"])
   @key(fields: ["pubDate"], name: "byPubDate")
   @auth(
@@ -29,5 +29,7 @@ type Alert
 }
 
 type Mutation {
-  confirmPhone(id: ID!, verificationCode: String!): Boolean @function(name: "handleConfirmVerificationCode-${env}")
+  confirmPhone(verificationCode: String!): Boolean
+    @function(name: "handleConfirmVerificationCode-${env}")
+  createPhone(number: String!): Phone @function(name: "createPhone-${env}")
 }

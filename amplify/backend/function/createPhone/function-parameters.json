@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "auth": {
+      "tsunamialert97a1c8ba": [
+        "read"
+      ]
+    },
+    "api": {
+      "tsunamialert": [
+        "read"
+      ]
+    },
+    "storage": {
+      "Phone:@model(appsync)": [
+        "create",
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": [
+    {
+      "type": "ProjectLayer",
+      "resourceName": "tsunamiSharedLayer",
+      "version": 1
+    }
+  ]
+}
