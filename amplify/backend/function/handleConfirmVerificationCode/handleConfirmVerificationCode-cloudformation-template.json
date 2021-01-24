@@ -117,7 +117,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/handleConfirmVerificationCode-4b2b597130766a644a4c-build.zip"
+          "S3Key": "amplify-builds/handleConfirmVerificationCode-7962374d415745726637-build.zip"
         }
       }
     },

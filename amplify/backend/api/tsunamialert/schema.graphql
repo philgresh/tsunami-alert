@@ -29,7 +29,7 @@ type Alert
 }
 
 type Mutation {
-  confirmPhone(verificationCode: String!): Boolean
+  confirmPhone(number: String!, verificationCode: String!): Phone
     @function(name: "handleConfirmVerificationCode-${env}")
   createPhone(number: String!): Phone @function(name: "createPhone-${env}")
 }

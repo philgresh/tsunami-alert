@@ -36,6 +36,17 @@ const invokePromise = promisify(lambda.invoke.bind(lambda));
 exports.handler = async (event, ctx) => {
   console.log(JSON.stringify({ event, ctx }, null, 2));
 
+  ctx.result = {
+    id: '51f0b1db0dc281e017dc10ba4aeacef996227',
+    number: '+19517757549',
+    owner: '28798d31-8752-4390-ae61-04ab936de25b',
+    verified: false,
+    verificationCode: null,
+    subscribed: false,
+    updatedAt: '2021-01-24T03:41:55.689Z',
+    createdAt: '2021-01-24T03:41:55.689Z',
+  };
+
   if (!event.identity && !event.identity.sub) throw Error('Not signed in!');
   if (!event.arguments.number) throw Error('Missing number!');
 
@@ -44,8 +55,18 @@ exports.handler = async (event, ctx) => {
   const randInt = await genRandInt();
   const verificationCode = genHashDigest(randInt.toString());
   const now = new Date().toISOString();
-  const id = genHashDigest(number).slice(0, 36); // No need for super long IDs, same length as a UUID
+  const id = genHashDigest(number).slice(0, 37); // No need for super long IDs, same length as a UUID
 
+  const newRecord = {
+    id,
+    number,
+    owner,
+    verified: false,
+    verificationCode: null,
+    subscribed: false,
+    updatedAt: now,
+    createdAt: now,
+  };
   const params = {
     TableName: TABLE_NAME,
     Item: {
@@ -76,32 +97,38 @@ exports.handler = async (event, ctx) => {
     },
   };
 
-  return putPromise(params)
-    .then(async (res) => {
-      console.log(
-        `Successfully added ${id}:`,
-        JSON.stringify({ res }, null, 2),
-      );
+  let data = {};
+  let errors = [];
 
+  await putPromise(params)
+    .then(async () => {
       const Payload = JSON.stringify({ record: { number }, randInt }, null, 2);
       const response = await invokePromise({
         Payload,
         FunctionName: SEND_VERIFICATION_CODE_LAMBDA,
       })
-        .then((result) => result)
+        .then((result) => [null, result])
         .catch((err) => {
-          console.error(err);
-          return err;
+          errors.push(err);
         });
       console.log(
         'Successfully forwarded to sendVerificationCode lambda',
         JSON.stringify({ response }, null, 2),
       );
+      data = { ...newRecord };
     })
     .catch((err) => {
-      console.error(err);
-      return err;
+      errors.push(err);
     });
+
+  if (data)
+    console.log(
+      `Successfully added ${id}:`,
+      JSON.stringify({ data, errors }, null, 2),
+    );
+  ctx.result = { ...data };
+  if (errors.length > 0) ctx.errors = errors;
+  return { ...data };
 };
 
 async function genRandInt() {

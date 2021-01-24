@@ -2,8 +2,17 @@
 // this is an auto generated file. This will be overwritten
 
 export const confirmPhone = /* GraphQL */ `
-  mutation ConfirmPhone($verificationCode: String!) {
-    confirmPhone(verificationCode: $verificationCode)
+  mutation ConfirmPhone($number: String!, $verificationCode: String!) {
+    confirmPhone(number: $number, verificationCode: $verificationCode) {
+      id
+      owner
+      number
+      verificationCode
+      verified
+      subscribed
+      createdAt
+      updatedAt
+    }
   }
 `;
 export const createPhone = /* GraphQL */ `
