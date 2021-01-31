@@ -96,7 +96,7 @@ const useAmplifyAuth = (history) => {
     };
   }, [triggerFetch]);
 
-  const handleSignIn = async (nextAuthState, authData) => {
+  const handleSignIn = async (nextAuthState, _authData) => {
     // console.log(nextAuthState, authData);
     if (nextAuthState === AuthState.SignedIn) {
       // dispatch({

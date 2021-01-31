@@ -4,13 +4,10 @@ import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
 
 const SignIn = ({ handleSignIn }) => {
   return (
-    <div>
-      <h1>SIGN IN!</h1>
-      <AmplifyAuthenticator
-        usernameAlias="email"
-        handleAuthStateChange={handleSignIn}
-      />
-    </div>
+    <AmplifyAuthenticator
+      usernameAlias="email"
+      handleAuthStateChange={handleSignIn}
+    />
   );
 };
 export default SignIn;
