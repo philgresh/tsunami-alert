@@ -1,32 +1,58 @@
-/* eslint-disable no-console */
-import React, { useState, useEffect } from 'react';
-import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
-import PublicRoutes from './routes/PublicRoutes';
-import PrivateRoutes from './routes/PrivateRoutes';
+import React from 'react';
+import './index.css';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import Amplify from 'aws-amplify';
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import awsConfig from './aws-exports';
+import Router from './Router';
+import store from './app/store';
 
-const AuthStateApp = () => {
-  const [authState, setAuthState] = useState();
-  const [user, setUser] = useState();
+const isLocalhost = Boolean(
+  window.location.hostname === 'localhost' ||
+    // [::1] is the IPv6 localhost address.
+    window.location.hostname === '[::1]' ||
+    // 127.0.0.1/8 is considered localhost for IPv4.
+    window.location.hostname.match(
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
+    ),
+);
 
-  useEffect(() => {
-    onAuthUIStateChange((nextAuthState, authData) => {
-      if (nextAuthState === AuthState.SignedIn) {
-        console.log('user successfully signed in!');
-        console.log('user data: ', authData);
-      }
-      if (!authData) {
-        console.log('user is not signed in...');
-      }
-      setAuthState(nextAuthState);
-      setUser(authData);
-    });
-  }, []);
+// Assuming you have two redirect URIs, and the first is for localhost
+// and second is for production
+const [
+  localRedirectSignIn,
+  productionRedirectSignIn,
+] = awsConfig.oauth?.redirectSignIn.split(',');
 
-  return authState === AuthState.SignedIn && user ? (
-    <PrivateRoutes user={user} authState={authState} />
-  ) : (
-    <PublicRoutes />
+const [
+  localRedirectSignOut,
+  productionRedirectSignOut,
+] = awsConfig.oauth?.redirectSignOut.split(',');
+
+const updatedAwsConfig = {
+  ...awsConfig,
+  oauth: {
+    ...awsConfig.oauth,
+    redirectSignIn: isLocalhost
+      ? localRedirectSignIn
+      : productionRedirectSignIn,
+    redirectSignOut: isLocalhost
+      ? localRedirectSignOut
+      : productionRedirectSignOut,
+  },
+};
+
+Amplify.configure(updatedAwsConfig);
+
+const App = () => {
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </Provider>
   );
 };
 
-export default AuthStateApp;
+export default withAuthenticator(App);

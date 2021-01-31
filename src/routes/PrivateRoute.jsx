@@ -1,34 +1,36 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable no-debugger */
 /* eslint-disable react/jsx-props-no-spreading */
-import Auth from '@aws-amplify/auth';
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Redirect, useHistory } from 'react-router-dom';
+import { useUser } from '../containers/UserContainer';
 
-export const isAuthenticated = async () => {
-  try {
-    return await Auth.currentSession().isValid();
-  } catch (error) {
-    return false;
-  }
-};
-
-export default function PrivateRoute({ children, ...rest }) {
-  const isAuthed = isAuthenticated();
+// eslint-disable-next-line react/prop-types
+const PrivateRoute = ({ children: Children, ...rest }) => {
+  // const checkUserAuth = validateToken(
+  //   localStorage.getItem(AUTH_USER_TOKEN_KEY),
+  // );
+  const { user } = useUser();
+  const history = useHistory();
+  console.log(history, user);
+  debugger;
   return (
     <Route
       {...rest}
-      render={({ location }) =>
-        isAuthed ? (
-          children
+      render={(props) => {
+        return user ? (
+          <Children {...props} user={user} />
         ) : (
           <Redirect
             to={{
-              pathname: '/signin',
-              state: { from: location },
+              pathname: `/signin?redirect=${history.location.pathname.slice(
+                1,
+              )}`,
             }}
           />
-        )
-      }
+        );
+      }}
     />
   );
-}
+};
+
+export default PrivateRoute;
