@@ -4,11 +4,18 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
-import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
-import { BrowserRouter, Route, Switch, Redirect, Link } from 'react-router-dom';
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  Redirect,
+  Link,
+  useHistory,
+} from 'react-router-dom';
 import Auth from '@aws-amplify/auth';
 import useAmplifyAuth from './utils/useAmplifyAuth';
-import protectedRouteHOC from './routes/protected/protectedRoute';
+import { AuthRoute, ProtectedRoute } from './routes/routeHelpers';
 import FourOhFour from './pages/404';
 import NavBar from './navbar';
 import SignIn from './pages/signin';
@@ -17,10 +24,13 @@ import Splash from './pages/splash';
 export const UserContext = React.createContext();
 
 const Router = () => {
+  const history = useHistory();
   const {
-    state: { user },
+    authState,
+    authState: { user },
     handleSignout,
-  } = useAmplifyAuth();
+    handleSignIn,
+  } = useAmplifyAuth(history);
 
   return (
     <UserContext.Provider value={{ user }}>
@@ -30,29 +40,33 @@ const Router = () => {
         </button>
       )}
       <Switch>
-        {/* Navigation */}
-        {/* <Navbar user={user} handleSignout={handleSignout} /> */}
-        {/* Routes */}
-        {user ? (
+        {authState && user ? (
           <Route exact path="/">
-            <div>
-              <h1>Home page (signed in)</h1>
-              <pre>{JSON.stringify(user, null, 2)}</pre>
-            </div>
+            <Redirect to="/app" />
           </Route>
         ) : (
           <Route exact path="/" component={Splash} />
         )}
-        <Route exact path="/signin" component={AmplifyAuthenticator} />
-        <Route exact path="/protected">
-          <pre>{JSON.stringify(user, null, 2)}</pre>
-        </Route>
-        {/* <Route
-              path="/markets/:marketId"
-              component={({ match }) => (
-                <MarketPage user={user} marketId={match.params.marketId} />
-              )}
-            /> */}
+        {
+          // This is bullshit but whatever
+        }
+        {authState && user ? (
+          <Route exact path="/signin">
+            <Redirect to="/app" />
+          </Route>
+        ) : (
+          <Route exact path="/signin">
+            <SignIn handleSignIn={handleSignIn} />
+          </Route>
+        )}
+        <ProtectedRoute
+          exact
+          path="/app"
+          history={history}
+          component={() => <pre>{JSON.stringify(user, null, 2)}</pre>}
+          authState={authState}
+        />
+
         <Route path="/*">
           <FourOhFour />
         </Route>

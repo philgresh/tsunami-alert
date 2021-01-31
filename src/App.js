@@ -3,7 +3,6 @@ import './index.css';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import Amplify from 'aws-amplify';
-import { withAuthenticator } from '@aws-amplify/ui-react';
 import awsConfig from './aws-exports';
 import Router from './Router';
 import store from './app/store';
@@ -55,4 +54,4 @@ const App = () => {
   );
 };
 
-export default withAuthenticator(App);
+export default App;

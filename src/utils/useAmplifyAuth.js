@@ -3,11 +3,14 @@
 // https://www.rockyourcode.com/custom-react-hook-use-aws-amplify-auth/
 import { useReducer, useState, useEffect } from 'react';
 import { Auth, Hub } from 'aws-amplify';
+import { AuthState } from '@aws-amplify/ui-components';
 
 const FETCH_USER_DATA_INIT = 'FETCH_USER_DATA_INIT';
 const FETCH_USER_DATA_SUCCESS = 'FETCH_USER_DATA_SUCCESS';
 const FETCH_USER_DATA_FAILURE = 'FETCH_USER_DATA_FAILURE';
 const RESET_USER_DATA = 'RESET_USER_DATA';
+const REDIRECT_TO_AFTER_SIGNIN = '/app';
+const REDIRECT_TO_AFTER_SIGNOUT = '/';
 
 const amplifyAuthReducer = (state, action) => {
   switch (action.type) {
@@ -33,13 +36,14 @@ const amplifyAuthReducer = (state, action) => {
   }
 };
 
-const useAmplifyAuth = () => {
-  const initialState = {
-    isLoading: true,
-    isError: false,
-    user: null,
-  };
-  const [state, dispatch] = useReducer(amplifyAuthReducer, initialState);
+const initialState = Object.freeze({
+  isLoading: true,
+  isError: false,
+  user: null,
+});
+
+const useAmplifyAuth = (history) => {
+  const [authState, dispatch] = useReducer(amplifyAuthReducer, initialState);
   const [triggerFetch, setTriggerFetch] = useState(false);
 
   useEffect(() => {
@@ -47,21 +51,22 @@ const useAmplifyAuth = () => {
 
     const fetchUserData = async () => {
       if (isMounted) {
-        dispatch({ type: 'FETCH_USER_DATA_INIT' });
+        dispatch({ type: FETCH_USER_DATA_INIT });
       }
       try {
         if (isMounted) {
           const data = await Auth.currentAuthenticatedUser();
           if (data) {
             dispatch({
-              type: 'FETCH_USER_DATA_SUCCESS',
+              type: FETCH_USER_DATA_SUCCESS,
               payload: { user: data },
             });
+            history.push(REDIRECT_TO_AFTER_SIGNIN);
           }
         }
       } catch (error) {
         if (isMounted) {
-          dispatch({ type: 'FETCH_USER_DATA_FAILURE' });
+          dispatch({ type: FETCH_USER_DATA_FAILURE });
         }
       }
     };
@@ -74,15 +79,11 @@ const useAmplifyAuth = () => {
     };
 
     const onAuthEvent = (payload) => {
-      switch (payload.event) {
-        case 'signIn':
-          if (isMounted) {
-            setTriggerFetch(true);
-            console.log('signed in');
-          }
-          break;
-        default:
-          console.log(`onAuthEvent: ${payload.event}`);
+      if (payload.event === AuthState.SignIn) {
+        if (isMounted) {
+          setTriggerFetch(true);
+          console.log('signed in');
+        }
       }
     };
 
@@ -95,18 +96,31 @@ const useAmplifyAuth = () => {
     };
   }, [triggerFetch]);
 
+  const handleSignIn = async (nextAuthState, authData) => {
+    // console.log(nextAuthState, authData);
+    if (nextAuthState === AuthState.SignedIn) {
+      // dispatch({
+      //   type: FETCH_USER_DATA_SUCCESS,
+      //   payload: { user: authData.attributes },
+      // });
+      setTriggerFetch(true);
+      history.push(REDIRECT_TO_AFTER_SIGNIN);
+    }
+  };
+
   const handleSignout = async () => {
     try {
       console.log('signed out');
       await Auth.signOut();
       setTriggerFetch(false);
-      dispatch({ type: 'RESET_USER_DATA' });
+      dispatch({ type: RESET_USER_DATA });
+      history.push(REDIRECT_TO_AFTER_SIGNOUT);
     } catch (error) {
       console.error('Error signing out user ', error);
     }
   };
 
-  return { state, handleSignout };
+  return { authState, handleSignout, handleSignIn };
 };
 
 export default useAmplifyAuth;
