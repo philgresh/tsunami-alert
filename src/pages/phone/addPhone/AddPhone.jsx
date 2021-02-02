@@ -1,46 +1,62 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withAuthenticator } from '@aws-amplify/ui-react';
-import { Formik, Field, Form } from 'formik';
-import phoneSchema from '../phoneSchema';
+import { useFormik } from 'formik';
+import InputMask from 'react-input-mask';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import { phoneSchema, onSubmit, confirmPhone } from '../phoneUtils';
 
-const AddPhone = () => (
-  <div>
-    <h1>Add a Phone Number</h1>
-    <Formik
-      initialValues={{
-        number: '',
-        country: '1',
-      }}
-      onSubmit={async (values) => {
-        await new Promise((r) => setTimeout(r, 500));
-        alert(JSON.stringify(values, null, 2));
-      }}
-      validationSchema={phoneSchema}
-    >
-      {({ errors, touched }) => (
-        <Form>
-          <label htmlFor="number">
-            Phone Number (US/+1 country code only)
-            <Field
+window.confirmPhone = confirmPhone;
+
+const AddPhone = () => {
+  const formik = useFormik({
+    initialValues: {
+      number: '',
+    },
+    validationSchema: phoneSchema,
+    onSubmit,
+  });
+  return (
+    <div>
+      <h1>Add a Phone Number</h1>
+      <form onSubmit={formik.handleSubmit}>
+        <InputMask
+          mask="(999) 999-9999"
+          value={formik.values.number}
+          disabled={false}
+          maskChar=" "
+          onChange={formik.handleChange}
+        >
+          {(inputProps) => (
+            <TextField
+              fullWidth
               id="number"
               name="number"
-              placeholder="415-555-7865"
-              type="tel"
-              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+              label="Phone number"
+              type="text"
+              {...inputProps}
+              error={formik.touched.number && Boolean(formik.errors.number)}
+              helperText={formik.touched.number && formik.errors.number}
             />
-            {errors.number && touched.number ? (
-              <div className="helper-text error">{errors.number}</div>
-            ) : null}
-          </label>
-          <button type="submit">Submit</button>
-        </Form>
-      )}
-    </Formik>
-  </div>
-);
+          )}
+        </InputMask>
+        <Button
+          color="primary"
+          variant="contained"
+          fullWidth
+          type="submit"
+          disabled={formik.isSubmitting}
+        >
+          Submit
+        </Button>
+      </form>
+    </div>
+  );
+};
 
 AddPhone.propTypes = {};
 
-export default withAuthenticator(AddPhone);
+export default AddPhone;

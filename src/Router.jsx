@@ -11,6 +11,7 @@ import FourOhFour from './pages/404';
 import NavBar from './navbar';
 import SignIn from './pages/signin';
 import Splash from './pages/splash';
+import AddPhone from './pages/phone/addPhone/AddPhone';
 
 export const UserContext = React.createContext();
 
@@ -27,39 +28,43 @@ const Router = () => {
     <UserContext.Provider value={{ user }}>
       <CssBaseline />
       <NavBar handleSignout={handleSignout} authState={authState} />
-      {!(authState && user) ? (
-        <Switch>
-          <Route exact path="/" component={Splash} />
-          <Route exact path="/signin">
-            <SignIn handleSignIn={handleSignIn} />
-          </Route>
-        </Switch>
-      ) : (
-        <Switch>
-          <Route exact path="/">
-            <Redirect to="/app" />
-          </Route>
-          <Route exact path="/signin">
-            <Redirect to="/app" />
-          </Route>
-          <Route exact path="/signin">
-            <SignIn handleSignIn={handleSignIn} />
-          </Route>
-          <ProtectedRoute
-            exact
-            path="/app"
-            history={history}
-            component={() => <pre>{JSON.stringify(user, null, 2)}</pre>}
-            authState={authState}
-          />
-
-          <Route path="/*">
-            <FourOhFour />
-          </Route>
-        </Switch>
-      )}
+      <Switch>
+        <Route exact path="/app/phones/add">
+          <AddPhone />
+        </Route>
+      </Switch>
     </UserContext.Provider>
   );
 };
+
+// {/* {!(authState && user) ? (
+//   <Switch>
+//     <Route exact path="/" component={Splash} />
+//     <Route exact path="/signin">
+//       <SignIn handleSignIn={handleSignIn} />
+//     </Route>
+//   </Switch>
+// ) : ( */}
+// {/* <Route exact path="/">
+//       <Redirect to="/app" />
+//     </Route>
+//     <Route exact path="/signin">
+//       <Redirect to="/app" />
+//     </Route> */}
+// {/* <Route exact path="/signin">
+//     <SignIn handleSignIn={handleSignIn} />
+//   </Route> */}
+// {/* <ProtectedRoute
+//       exact
+//       path="/app"
+//       history={history}
+//       component={() => <pre>{JSON.stringify(user, null, 2)}</pre>}
+//       authState={authState}
+//     /> */}
+
+// {/* <Route path="/*">
+//     <FourOhFour />
+//   </Route> */}
+// {/* )} */}
 
 export default Router;
