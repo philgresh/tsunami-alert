@@ -11,6 +11,7 @@ const { promisify } = require('es6-promisify');
 const crypto = require('crypto');
 
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
+const SNS_TOPIC_ARN = process.env.SNS_TOPIC_ARN;
 
 AWS.config.update({ region: process.env.REGION });
 
@@ -19,10 +20,21 @@ const dynamodb = new AWS.DynamoDB({
   region: process.env.REGION,
 });
 
+const sns = new AWS.SNS({
+  apiVersion: '2010-03-31',
+  region: process.env.REGION,
+});
+
 const { unmarshall } = AWS.DynamoDB.Converter;
 const updatePromise = promisify(dynamodb.updateItem.bind(dynamodb));
+const subscribePromise = promisify(sns.subscribe.bind(sns));
 
-exports.handler = async (event, context) => {
+/**
+ * @param event - Includes `arguments` and `identity`
+ * @param context - Not used here
+ * @param callback - Return `errors`, `values` to AppSync
+ */
+exports.handler = async (event, _context, callback) => {
   const { number, verificationCode } = event.arguments;
   const { sub: ownerSub } = event.identity;
   if (!number || !verificationCode)
@@ -33,8 +45,8 @@ exports.handler = async (event, context) => {
   const now = new Date().toISOString();
   console.log('Trying to verify: ', {
     id,
-    hashDigest: verificationCode,
-    owner: ownerSub,
+    verificationCode,
+    ownerSub,
   });
 
   const params = {
@@ -78,27 +90,33 @@ exports.handler = async (event, context) => {
   };
 
   let data = {};
-  let errors = [];
 
-  await updatePromise(params)
+  // Subscribe to SNS topic, then mark as verified/subscribed in database
+  await subscribePromise({
+    Protocol: 'sms' /* required */,
+    TopicArn: SNS_TOPIC_ARN /* required */,
+    Endpoint: number,
+  })
+    .then((result) => {
+      console.log('sns result:', result);
+      return updatePromise(params);
+    })
     .then((res) => {
       data = {
         ...unmarshall(res.Attributes),
         verificationCode: null,
       };
+      return;
     })
     .catch((err) => {
-      errors.push(err);
+      if (err.code === 'ConditionalCheckFailedException') {
+        console.error(err);
+        callback('That verification code is not correct!', null);
+      }
     });
-  if (errors.length > 0) {
-    console.error(JSON.stringify({ errors }, null, 2));
-    context.errors = errors;
-  }
-  console.log(
-    `Successfully updated ${id}:`,
-    JSON.stringify({ data, errors }, null, 2),
-  );
-  return { ...data };
+
+  console.log(JSON.stringify({ data }, null, 2));
+  callback(null, data);
 };
 
 function genHashDigest(str) {

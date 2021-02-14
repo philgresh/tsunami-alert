@@ -25,6 +25,14 @@
         "tsunamiSharedLayer": {
           "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
           "s3Key": "amplify-builds/tsunamiSharedLayer-build.zip"
+        },
+        "handleConfirmVerificationCode": {
+          "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
+          "s3Key": "amplify-builds/handleConfirmVerificationCode-51694f2b48734262535a-build.zip"
+        },
+        "createPhone": {
+          "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
+          "s3Key": "amplify-builds/createPhone-415264733169594c3468-build.zip"
         }
       }
     },
@@ -39,6 +47,14 @@
                 }
               ],
               "hash": "6q3ClFTf8wlgfKhTJK2qZxcOBq4zZHn6YCqiFL2p6oI="
+            },
+            "2": {
+              "permissions": [
+                {
+                  "type": "private"
+                }
+              ],
+              "hash": "2Wz1WtJ84djenM74TUJEnkJDNuRMB1/l+WTtudvi8co="
             }
           }
         }

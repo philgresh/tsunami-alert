@@ -1,5 +1,5 @@
 type Phone
-  @model(mutations: { update: "update" })
+  @model(mutations: { update: "update", delete: "delete" })
   @key(fields: ["id"])
   @key(fields: ["owner"], name: "byOwner")
   @key(fields: ["number"], name: "byNumber")
@@ -7,7 +7,7 @@ type Phone
   id: ID!
   owner: String
   number: String!
-  verificationCode: String @auth(rules: [{ allow: groups, groups: ["admin"] }])
+  # verificationCode: String @auth(rules: [{ allow: groups, groups: ["admin"] }])
   verified: Boolean
   subscribed: Boolean
 }
@@ -18,8 +18,7 @@ type Alert
   @key(fields: ["pubDate"], name: "byPubDate")
   @auth(
     rules: [
-      { allow: groups, groups: ["admin"] }
-      { allow: private, operations: [read], provider: userPools }
+      # { allow: groups, groups: ["admin"], operations: [create, update, delete] }
     ]
   ) {
   id: ID!
