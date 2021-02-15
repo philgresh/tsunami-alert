@@ -7,6 +7,8 @@
     "aws-sdk": "^2.831.0",
     "es6-promisify": "^6.1.1",
     "libphonenumber-js": "^1.9.11",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "random-number-csprng": "^1.0.2",
     "rss-parser": "^3.10.0"
   },

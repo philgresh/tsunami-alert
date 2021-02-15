@@ -9,6 +9,7 @@ Amplify Params - DO NOT EDIT */
 const AWS = require('aws-sdk');
 const { promisify } = require('es6-promisify');
 const crypto = require('crypto');
+const isValidPhoneNumber = require('libphonenumber-js').isValidPhoneNumber;
 
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
 const SNS_TOPIC_ARN = process.env.SNS_TOPIC_ARN;
@@ -37,8 +38,22 @@ const subscribePromise = promisify(sns.subscribe.bind(sns));
 exports.handler = async (event, _context, callback) => {
   const { number, verificationCode } = event.arguments;
   const { sub: ownerSub } = event.identity;
-  if (!number || !verificationCode)
-    throw Error('Did not provide correct information!');
+  if (!number || !verificationCode) {
+    callback('Did not provide correct information!', null);
+    return;
+  }
+
+  if (!isValidPhoneNumber(number)) {
+    console.error('Invalid number:', number);
+    callback('Invalid phone number', null);
+    return;
+  }
+
+  if (!isValidVerificationCode(verificationCode)) {
+    console.error('Invalid verification code format:', verificationCode);
+    callback('Invalid verification code format', null);
+    return;
+  }
 
   const id = genHashDigest(number).slice(0, 37);
   const hashDigest = genHashDigest(verificationCode);
@@ -111,7 +126,7 @@ exports.handler = async (event, _context, callback) => {
     .catch((err) => {
       if (err.code === 'ConditionalCheckFailedException') {
         console.error(err);
-        callback('That verification code is not correct!', null);
+        callback('The phone number or verification code is not correct!', null);
       }
     });
 
@@ -122,4 +137,8 @@ exports.handler = async (event, _context, callback) => {
 function genHashDigest(str) {
   const hash = crypto.createHash('sha256');
   return hash.update(str).digest('hex');
+}
+
+function isValidVerificationCode(verificationCode) {
+  return verificationCode >= 101001 && verificationCode <= 999999;
 }

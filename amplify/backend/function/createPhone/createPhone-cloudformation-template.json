@@ -131,7 +131,7 @@
         "Runtime": "nodejs12.x",
         "Layers": [
           {
-            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:tsunamiSharedLayer-dev:2"
+            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:tsunamiSharedLayer-dev:4"
           }
         ],
         "Timeout": "25",
