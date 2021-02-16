@@ -28,15 +28,23 @@
         },
         "handleConfirmVerificationCode": {
           "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
-          "s3Key": "amplify-builds/handleConfirmVerificationCode-2f2f7256793042394d4f-build.zip"
+          "s3Key": "amplify-builds/handleConfirmVerificationCode-5471616b5a7472776752-build.zip"
         },
         "createPhone": {
           "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
-          "s3Key": "amplify-builds/createPhone-74497250337a70726a70-build.zip"
+          "s3Key": "amplify-builds/createPhone-697749556b797a434b71-build.zip"
         },
         "fetchFeed": {
           "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
-          "s3Key": "amplify-builds/fetchFeed-58374752584a624a4b33-build.zip"
+          "s3Key": "amplify-builds/fetchFeed-5342434e48512f46366d-build.zip"
+        },
+        "sendVerificationCode": {
+          "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
+          "s3Key": "amplify-builds/sendVerificationCode-6570576b526371446767-build.zip"
+        },
+        "checkFeeds": {
+          "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
+          "s3Key": "amplify-builds/checkFeeds-42615331394e79752f2b-build.zip"
         }
       }
     },
@@ -75,6 +83,14 @@
                 }
               ],
               "hash": "blyVTE7EtC65f+EepS/ih4baefp9PDlUboBvf3RaixQ="
+            },
+            "5": {
+              "permissions": [
+                {
+                  "type": "private"
+                }
+              ],
+              "hash": "1So0oVJwDnySAyDrtIWhVZWjfHXq7IH6LJUUnpl7RUo="
             }
           }
         }

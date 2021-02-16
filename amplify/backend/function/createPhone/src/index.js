@@ -13,8 +13,10 @@ const AWS = require('aws-sdk');
 const { promisify } = require('es6-promisify');
 const randomNumber = require('random-number-csprng');
 const crypto = require('crypto');
-const isValidPhoneNumber = require('libphonenumber-js').isValidPhoneNumber;
+const { isValidPhoneNumber } = require('libphonenumber-js');
 
+const MIN = 101001;
+const MAX = 999999;
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
 const SEND_VERIFICATION_CODE_LAMBDA =
   process.env.FUNCTION_SENDVERIFICATIONCODE_NAME;
@@ -30,7 +32,6 @@ const lambda = new AWS.Lambda({
   region: process.env.REGION,
 });
 
-const { unmarshall } = AWS.DynamoDB.Converter;
 const putPromise = promisify(dynamodb.putItem.bind(dynamodb));
 const invokePromise = promisify(lambda.invoke.bind(lambda));
 
@@ -124,12 +125,11 @@ exports.handler = async (event, ctx, callback) => {
     ctx.errors = errors;
   } else errors = null;
   callback(errors, data);
-  return { ...data };
 };
 
 async function genRandInt() {
   try {
-    const num = await randomNumber(101001, 999999);
+    const num = await randomNumber(MIN, MAX);
     return num;
   } catch (err) {
     return console.error('Error generating random integer: ', err);

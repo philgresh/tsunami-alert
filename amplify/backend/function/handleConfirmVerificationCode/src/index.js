@@ -9,10 +9,12 @@ Amplify Params - DO NOT EDIT */
 const AWS = require('aws-sdk');
 const { promisify } = require('es6-promisify');
 const crypto = require('crypto');
-const isValidPhoneNumber = require('libphonenumber-js').isValidPhoneNumber;
+const { isValidPhoneNumber } = require('libphonenumber-js');
 
+const MIN = 101001;
+const MAX = 999999;
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
-const SNS_TOPIC_ARN = process.env.SNS_TOPIC_ARN;
+const { SNS_TOPIC_ARN } = process.env;
 
 AWS.config.update({ region: process.env.REGION });
 
@@ -104,34 +106,33 @@ exports.handler = async (event, _context, callback) => {
     ConditionExpression: '#O = :o AND #C = :cc',
   };
 
-  let data = {};
-
   // Subscribe to SNS topic, then mark as verified/subscribed in database
-  await subscribePromise({
-    Protocol: 'sms' /* required */,
-    TopicArn: SNS_TOPIC_ARN /* required */,
-    Endpoint: number,
-  })
-    .then((result) => {
-      console.log('sns result:', result);
-      return updatePromise(params);
-    })
-    .then((res) => {
+  let data = {};
+  await updatePromise(params)
+    .then(function (res) {
       data = {
         ...unmarshall(res.Attributes),
-        verificationCode: null,
       };
-      return;
     })
     .catch((err) => {
       if (err.code === 'ConditionalCheckFailedException') {
         console.error(err);
         callback('The phone number or verification code is not correct!', null);
+        return;
       }
     });
 
-  console.log(JSON.stringify({ data }, null, 2));
-  callback(null, data);
+  await subscribePromise({
+    Protocol: 'sms' /* required */,
+    TopicArn: SNS_TOPIC_ARN /* required */,
+    Endpoint: number,
+  }).then(function (result) {
+    console.log(
+      JSON.stringify({ updateResult: data, snsResult: result }, null, 2),
+    );
+    callback(null, data);
+    return;
+  });
 };
 
 function genHashDigest(str) {
@@ -140,5 +141,5 @@ function genHashDigest(str) {
 }
 
 function isValidVerificationCode(verificationCode) {
-  return verificationCode >= 101001 && verificationCode <= 999999;
+  return verificationCode >= MIN && verificationCode <= MAX;
 }

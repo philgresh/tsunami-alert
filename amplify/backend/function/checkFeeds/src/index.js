@@ -5,11 +5,12 @@
 Amplify Params - DO NOT EDIT */
 
 const AWS = require('aws-sdk');
-const FUNCTION_FETCHFEED_NAME = process.env.FUNCTION_FETCHFEED_NAME;
+
+const { FUNCTION_FETCHFEED_NAME } = process.env;
 
 AWS.config.update({ region: process.env.REGION });
 
-var lambda = new AWS.Lambda({
+const lambda = new AWS.Lambda({
   region: process.env.REGION,
 });
 

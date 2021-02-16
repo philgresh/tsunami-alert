@@ -28,7 +28,7 @@ exports.handler = async () => {
 };
 
 async function fetchAndUpdate({ url }) {
-  let feed = await parser.parseURL(url);
+  const feed = await parser.parseURL(url);
 
   const getItemPromise = promisify(dynamodb.getItem.bind(dynamodb));
   const putItemPromise = promisify(dynamodb.putItem.bind(dynamodb));
@@ -109,7 +109,7 @@ function prepGetItemPromise(getItemPromise, item) {
 
 function prepID(item) {
   const { id } = item;
-  const uuidIdx = id.search(/uuid\:/);
+  const uuidIdx = id.search(/uuid:/);
   if (uuidIdx === -1) return; // id is not formatted as expected
   const uuid = id.slice(uuidIdx + 5);
   return uuid;

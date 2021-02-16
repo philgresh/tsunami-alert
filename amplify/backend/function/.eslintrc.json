@@ -4,15 +4,12 @@
     "plugin:import/errors",
     "plugin:import/warnings",
     "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:prettier/recommended",
-    "prettier/react"
+    "plugin:prettier/recommended"
   ],
   "env": {
-    "browser": true,
+    "browser": false,
     "commonjs": true,
     "es6": true,
-    "jest": true,
     "node": true
   },
   "parser": "babel-eslint",
@@ -27,11 +24,11 @@
       "warn",
       { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
     ],
-    "jsx-a11y/href-no-hash": ["off"],
-    "react/jsx-filename-extension": ["warn", { "extensions": [".js", ".jsx"] }],
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-use-before-define": ["warn", { "functions": false, "classes": true }],
+    "import/no-unresolved": [2, { "caseSensitive": false }],
+    "consistent-return": "off",
     "max-len": [
       "warn",
       {
