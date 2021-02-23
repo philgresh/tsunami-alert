@@ -7,7 +7,8 @@
 Amplify Params - DO NOT EDIT */
 
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
-const REGION = process.env.REGION; 
+
+const { REGION } = process.env;
 
 exports.handler = (event) => {
   console.log({ event });
@@ -20,7 +21,7 @@ exports.handler = (event) => {
 
   const params = {
     Message,
-    PhoneNumber: number, //PHONE_NUMBER, in the E.164 phone number structure
+    PhoneNumber: number, // PHONE_NUMBER, in the E.164 phone number structure
   };
 
   const sns = new SNSClient({ region: REGION });
@@ -28,7 +29,7 @@ exports.handler = (event) => {
   const run = async () => {
     try {
       const data = await sns.send(new PublishCommand(params));
-      console.log('Success, message published. MessageID is ' + data.MessageId);
+      console.log(`Success, message published. MessageID is ${data.MessageId}`);
     } catch (err) {
       console.error(err, err.stack);
     }

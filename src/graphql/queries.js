@@ -7,7 +7,6 @@ export const getPhone = /* GraphQL */ `
       id
       owner
       number
-      verificationCode
       verified
       subscribed
       createdAt
@@ -34,7 +33,6 @@ export const listPhones = /* GraphQL */ `
         id
         owner
         number
-        verificationCode
         verified
         subscribed
         createdAt

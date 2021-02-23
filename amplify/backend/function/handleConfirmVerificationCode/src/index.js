@@ -9,8 +9,12 @@ Amplify Params - DO NOT EDIT */
 const AWS = require('aws-sdk');
 const { promisify } = require('es6-promisify');
 const crypto = require('crypto');
+const { isValidPhoneNumber } = require('libphonenumber-js');
 
+const MIN = 101001;
+const MAX = 999999;
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
+const { SNS_TOPIC_ARN } = process.env;
 
 AWS.config.update({ region: process.env.REGION });
 
@@ -19,22 +23,47 @@ const dynamodb = new AWS.DynamoDB({
   region: process.env.REGION,
 });
 
+const sns = new AWS.SNS({
+  apiVersion: '2010-03-31',
+  region: process.env.REGION,
+});
+
 const { unmarshall } = AWS.DynamoDB.Converter;
 const updatePromise = promisify(dynamodb.updateItem.bind(dynamodb));
+const subscribePromise = promisify(sns.subscribe.bind(sns));
 
-exports.handler = async (event, context) => {
+/**
+ * @param event - Includes `arguments` and `identity`
+ * @param context - Not used here
+ * @param callback - Return `errors`, `values` to AppSync
+ */
+exports.handler = async (event, _context, callback) => {
   const { number, verificationCode } = event.arguments;
   const { sub: ownerSub } = event.identity;
-  if (!number || !verificationCode)
-    throw Error('Did not provide correct information!');
+  if (!number || !verificationCode) {
+    callback('Did not provide correct information!', null);
+    return;
+  }
+
+  if (!isValidPhoneNumber(number)) {
+    console.error('Invalid number:', number);
+    callback('Invalid phone number', null);
+    return;
+  }
+
+  if (!isValidVerificationCode(verificationCode)) {
+    console.error('Invalid verification code format:', verificationCode);
+    callback('Invalid verification code format', null);
+    return;
+  }
 
   const id = genHashDigest(number).slice(0, 37);
   const hashDigest = genHashDigest(verificationCode);
   const now = new Date().toISOString();
   console.log('Trying to verify: ', {
     id,
-    hashDigest: verificationCode,
-    owner: ownerSub,
+    verificationCode,
+    ownerSub,
   });
 
   const params = {
@@ -77,31 +106,40 @@ exports.handler = async (event, context) => {
     ConditionExpression: '#O = :o AND #C = :cc',
   };
 
+  // Subscribe to SNS topic, then mark as verified/subscribed in database
   let data = {};
-  let errors = [];
-
   await updatePromise(params)
-    .then((res) => {
+    .then(function (res) {
       data = {
         ...unmarshall(res.Attributes),
-        verificationCode: null,
       };
     })
     .catch((err) => {
-      errors.push(err);
+      if (err.code === 'ConditionalCheckFailedException') {
+        console.error(err);
+        callback('The phone number or verification code is not correct!', null);
+        return;
+      }
     });
-  if (errors.length > 0) {
-    console.error(JSON.stringify({ errors }, null, 2));
-    context.errors = errors;
-  }
-  console.log(
-    `Successfully updated ${id}:`,
-    JSON.stringify({ data, errors }, null, 2),
-  );
-  return { ...data };
+
+  await subscribePromise({
+    Protocol: 'sms' /* required */,
+    TopicArn: SNS_TOPIC_ARN /* required */,
+    Endpoint: number,
+  }).then(function (result) {
+    console.log(
+      JSON.stringify({ updateResult: data, snsResult: result }, null, 2),
+    );
+    callback(null, data);
+    return;
+  });
 };
 
 function genHashDigest(str) {
   const hash = crypto.createHash('sha256');
   return hash.update(str).digest('hex');
+}
+
+function isValidVerificationCode(verificationCode) {
+  return verificationCode >= MIN && verificationCode <= MAX;
 }

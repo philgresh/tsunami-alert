@@ -17,6 +17,12 @@
     "functiontsunamiSharedLayerArn": {
       "Type": "String",
       "Default": "functiontsunamiSharedLayerArn"
+    },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
+    "s3Key": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -104,14 +110,18 @@
         "Runtime": "nodejs12.x",
         "Layers": [
           {
-            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:tsunamiSharedLayer-dev:1"
+            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:tsunamiSharedLayer-dev:4"
           }
         ],
         "MemorySize": 1024,
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/fetchFeed-71424e433869484a5246-build.zip"
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
         }
       }
     },

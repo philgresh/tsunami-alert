@@ -7,7 +7,6 @@ export const confirmPhone = /* GraphQL */ `
       id
       owner
       number
-      verificationCode
       verified
       subscribed
       createdAt
@@ -21,7 +20,6 @@ export const createPhone = /* GraphQL */ `
       id
       owner
       number
-      verificationCode
       verified
       subscribed
       createdAt
@@ -38,7 +36,22 @@ export const update = /* GraphQL */ `
       id
       owner
       number
-      verificationCode
+      verified
+      subscribed
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const delete = /* GraphQL */ `
+  mutation Delete(
+    $input: DeletePhoneInput!
+    $condition: ModelPhoneConditionInput
+  ) {
+    delete(input: $input, condition: $condition) {
+      id
+      owner
+      number
       verified
       subscribed
       createdAt

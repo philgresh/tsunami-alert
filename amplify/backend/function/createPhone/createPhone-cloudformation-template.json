@@ -29,6 +29,12 @@
     "functionsendVerificationCodeName": {
       "Type": "String",
       "Default": "functionsendVerificationCodeName"
+    },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
+    "s3Key": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -125,13 +131,17 @@
         "Runtime": "nodejs12.x",
         "Layers": [
           {
-            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:tsunamiSharedLayer-dev:1"
+            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:tsunamiSharedLayer-dev:5"
           }
         ],
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/createPhone-4e54327a4b6b6d6f6252-build.zip"
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
         }
       }
     },

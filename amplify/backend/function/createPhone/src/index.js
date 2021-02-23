@@ -13,7 +13,10 @@ const AWS = require('aws-sdk');
 const { promisify } = require('es6-promisify');
 const randomNumber = require('random-number-csprng');
 const crypto = require('crypto');
+const { isValidPhoneNumber } = require('libphonenumber-js');
 
+const MIN = 101001;
+const MAX = 999999;
 const TABLE_NAME = process.env.API_TSUNAMIALERT_PHONETABLE_NAME;
 const SEND_VERIFICATION_CODE_LAMBDA =
   process.env.FUNCTION_SENDVERIFICATIONCODE_NAME;
@@ -29,29 +32,24 @@ const lambda = new AWS.Lambda({
   region: process.env.REGION,
 });
 
-const { unmarshall } = AWS.DynamoDB.Converter;
 const putPromise = promisify(dynamodb.putItem.bind(dynamodb));
 const invokePromise = promisify(lambda.invoke.bind(lambda));
 
-exports.handler = async (event, ctx) => {
-  console.log(JSON.stringify({ event, ctx }, null, 2));
-
-  ctx.result = {
-    id: '51f0b1db0dc281e017dc10ba4aeacef996227',
-    number: '+19517757549',
-    owner: '28798d31-8752-4390-ae61-04ab936de25b',
-    verified: false,
-    verificationCode: null,
-    subscribed: false,
-    updatedAt: '2021-01-24T03:41:55.689Z',
-    createdAt: '2021-01-24T03:41:55.689Z',
-  };
+exports.handler = async (event, ctx, callback) => {
+  // console.log(JSON.stringify({ event, ctx }, null, 2));
 
   if (!event.identity && !event.identity.sub) throw Error('Not signed in!');
   if (!event.arguments.number) throw Error('Missing number!');
 
   const owner = event.identity.sub;
   const { number } = event.arguments;
+
+  if (!isValidPhoneNumber(number)) {
+    console.error('Invalid number:', number);
+    callback('Invalid phone number', null);
+    return;
+  }
+
   const randInt = await genRandInt();
   const verificationCode = genHashDigest(randInt.toString());
   const now = new Date().toISOString();
@@ -103,21 +101,17 @@ exports.handler = async (event, ctx) => {
   await putPromise(params)
     .then(async () => {
       const Payload = JSON.stringify({ record: { number }, randInt }, null, 2);
-      const response = await invokePromise({
+      data = { ...newRecord };
+      return invokePromise({
         Payload,
         FunctionName: SEND_VERIFICATION_CODE_LAMBDA,
-      })
-        .then((result) => [null, result])
-        .catch((err) => {
-          errors.push(err);
-        });
-      console.log(
-        'Successfully forwarded to sendVerificationCode lambda',
-        JSON.stringify({ response }, null, 2),
-      );
-      data = { ...newRecord };
+      });
+    })
+    .then((result) => {
+      console.log('InvokePromise Result:', result);
     })
     .catch((err) => {
+      console.error(err);
       errors.push(err);
     });
 
@@ -127,13 +121,15 @@ exports.handler = async (event, ctx) => {
       JSON.stringify({ data, errors }, null, 2),
     );
   ctx.result = { ...data };
-  if (errors.length > 0) ctx.errors = errors;
-  return { ...data };
+  if (errors.length > 0) {
+    ctx.errors = errors;
+  } else errors = null;
+  callback(errors, data);
 };
 
 async function genRandInt() {
   try {
-    const num = await randomNumber(111111, 999999);
+    const num = await randomNumber(MIN, MAX);
     return num;
   } catch (err) {
     return console.error('Error generating random integer: ', err);

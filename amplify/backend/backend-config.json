@@ -175,6 +175,13 @@
           "attributes": [
             "Name"
           ]
+        },
+        {
+          "category": "function",
+          "resourceName": "tsunamiSharedLayer",
+          "attributes": [
+            "Arn"
+          ]
         }
       ]
     }

@@ -21,8 +21,7 @@
       "Type": "AWS::Lambda::LayerVersion",
       "Properties": {
         "CompatibleRuntimes": [
-          "nodejs12.x",
-          "python3.8"
+          "nodejs12.x"
         ],
         "Content": {
           "S3Bucket": {
@@ -57,6 +56,90 @@
       "UpdateReplacePolicy": "Retain"
     },
     "LambdaLayerPermissionprivate1": {
+      "Type": "AWS::Lambda::LayerVersionPermission",
+      "Properties": {
+        "Action": "lambda:GetLayerVersion",
+        "LayerVersionArn": {
+          "Fn::Sub": [
+            "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}",
+            {
+              "layerName": "tsunamiSharedLayer",
+              "env": {
+                "Ref": "env"
+              },
+              "layerVersion": "1"
+            }
+          ]
+        },
+        "Principal": {
+          "Ref": "AWS::AccountId"
+        }
+      }
+    },
+    "LambdaLayerPermissionprivate2": {
+      "Type": "AWS::Lambda::LayerVersionPermission",
+      "Properties": {
+        "Action": "lambda:GetLayerVersion",
+        "LayerVersionArn": {
+          "Fn::Sub": [
+            "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}",
+            {
+              "layerName": "tsunamiSharedLayer",
+              "env": {
+                "Ref": "env"
+              },
+              "layerVersion": "2"
+            }
+          ]
+        },
+        "Principal": {
+          "Ref": "AWS::AccountId"
+        }
+      }
+    },
+    "LambdaLayerPermissionprivate3": {
+      "Type": "AWS::Lambda::LayerVersionPermission",
+      "Properties": {
+        "Action": "lambda:GetLayerVersion",
+        "LayerVersionArn": {
+          "Fn::Sub": [
+            "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}",
+            {
+              "layerName": "tsunamiSharedLayer",
+              "env": {
+                "Ref": "env"
+              },
+              "layerVersion": "3"
+            }
+          ]
+        },
+        "Principal": {
+          "Ref": "AWS::AccountId"
+        }
+      }
+    },
+    "LambdaLayerPermissionprivate4": {
+      "Type": "AWS::Lambda::LayerVersionPermission",
+      "Properties": {
+        "Action": "lambda:GetLayerVersion",
+        "LayerVersionArn": {
+          "Fn::Sub": [
+            "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}",
+            {
+              "layerName": "tsunamiSharedLayer",
+              "env": {
+                "Ref": "env"
+              },
+              "layerVersion": "4"
+            }
+          ]
+        },
+        "Principal": {
+          "Ref": "AWS::AccountId"
+        }
+      }
+    },
+    "LambdaLayerPermissionprivate5": {
       "Type": "AWS::Lambda::LayerVersionPermission",
       "Properties": {
         "Action": "lambda:GetLayerVersion",

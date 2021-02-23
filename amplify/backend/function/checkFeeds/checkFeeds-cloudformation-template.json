@@ -17,6 +17,12 @@
     "functiontsunamiSharedLayerArn": {
       "Type": "String",
       "Default": "functiontsunamiSharedLayerArn"
+    },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
+    "s3Key": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -83,8 +89,12 @@
         ],
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-tsunamialert-dev-03533-deployment",
-          "S3Key": "amplify-builds/checkFeeds-683573354c4e47505074-build.zip"
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
         }
       }
     },
