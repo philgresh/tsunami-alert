@@ -45,10 +45,26 @@ const initialState = Object.freeze({
 const useAmplifyAuth = (history) => {
   const [authState, dispatch] = useReducer(amplifyAuthReducer, initialState);
   const [triggerFetch, setTriggerFetch] = useState(false);
+  let isMounted = true;
+
+  const HubListener = () => {
+    Hub.listen('auth', (data) => {
+      const { payload } = data;
+      onAuthEvent(payload);
+    });
+  };
+
+  const onAuthEvent = (payload) => {
+    if (payload.event === AuthState.SignIn) {
+      if (isMounted) {
+        setTriggerFetch(true);
+        console.log('signed in');
+      }
+    }
+  };
 
   useEffect(() => {
-    let isMounted = true;
-
+    isMounted = true;
     const fetchUserData = async () => {
       if (isMounted) {
         dispatch({ type: FETCH_USER_DATA_INIT });
@@ -67,22 +83,6 @@ const useAmplifyAuth = (history) => {
       } catch (error) {
         if (isMounted) {
           dispatch({ type: FETCH_USER_DATA_FAILURE });
-        }
-      }
-    };
-
-    const HubListener = () => {
-      Hub.listen('auth', (data) => {
-        const { payload } = data;
-        onAuthEvent(payload);
-      });
-    };
-
-    const onAuthEvent = (payload) => {
-      if (payload.event === AuthState.SignIn) {
-        if (isMounted) {
-          setTriggerFetch(true);
-          console.log('signed in');
         }
       }
     };

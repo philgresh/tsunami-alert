@@ -27,12 +27,12 @@ export const createPhone = /* GraphQL */ `
     }
   }
 `;
-export const update = /* GraphQL */ `
-  mutation Update(
+export const updatePhone = /* GraphQL */ `
+  mutation UpdatePhone(
     $input: UpdatePhoneInput!
     $condition: ModelPhoneConditionInput
   ) {
-    update(input: $input, condition: $condition) {
+    updatePhone(input: $input, condition: $condition) {
       id
       owner
       number
@@ -43,12 +43,12 @@ export const update = /* GraphQL */ `
     }
   }
 `;
-export const delete = /* GraphQL */ `
-  mutation Delete(
+export const deletePhone = /* GraphQL */ `
+  mutation DeletePhone(
     $input: DeletePhoneInput!
     $condition: ModelPhoneConditionInput
   ) {
-    delete(input: $input, condition: $condition) {
+    deletePhone(input: $input, condition: $condition) {
       id
       owner
       number

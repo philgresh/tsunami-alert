@@ -39,7 +39,7 @@ export const confirmPhone = async (number, verificationCode) =>
 export const onSubmit = async (values, actions) => {
   const newNum = cleanNumber(values.number);
 
-  const result = await createPhone(newNum);
+  const result = await mutations.createPhone(newNum);
   console.log({ result });
   if (result) {
     actions.setSubmitting(true);

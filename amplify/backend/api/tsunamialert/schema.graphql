@@ -1,5 +1,5 @@
 type Phone
-  @model(mutations: { update: "update", delete: "delete" })
+  @model(mutations: { update: "updatePhone", delete: "deletePhone" })
   @key(fields: ["id"])
   @key(fields: ["owner"], name: "byOwner")
   @key(fields: ["number"], name: "byNumber")

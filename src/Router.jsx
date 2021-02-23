@@ -32,6 +32,9 @@ const Router = () => {
         <Route exact path="/app/phones/add">
           <AddPhone />
         </Route>
+        <Route exact path="/signin">
+          <SignIn handleSignIn={handleSignIn} />
+        </Route>
       </Switch>
     </UserContext.Provider>
   );
