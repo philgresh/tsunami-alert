@@ -10,9 +10,6 @@ const Parser = require('rss-parser');
 const AWS = require('aws-sdk');
 const { promisify } = require('es6-promisify');
 
-const PWTC_ATOM = 'https://www.tsunami.gov/events/xml/PHEBAtom.xml';
-// const NTWC_ATOM = 'https://www.tsunami.gov/events/xml/PAAQAtom.xml';
-
 AWS.config.update({ region: process.env.REGION });
 
 const dynamodb = new AWS.DynamoDB({
@@ -23,11 +20,10 @@ const parser = new Parser();
 
 const TableName = process.env.API_TSUNAMIALERT_ALERTTABLE_NAME;
 
-exports.handler = async () => {
-  return fetchAndUpdate({ url: PWTC_ATOM });
-};
+exports.handler = async (event) => {
+  console.log(JSON.stringify(event, null, 2));
 
-async function fetchAndUpdate({ url }) {
+  const { url } = event;
   const feed = await parser.parseURL(url);
 
   const getItemPromise = promisify(dynamodb.getItem.bind(dynamodb));
@@ -46,7 +42,8 @@ async function fetchAndUpdate({ url }) {
   if (results.length === 0) return;
 
   results.forEach((result, i) => {
-    if (Object.keys(result).length > 0) return;
+    const exists = Object.keys(result).length > 0;
+    if (exists) return;
     const itemPromise = prepPutItemPromise(putItemPromise, feed.items[i]);
     putItemPromises.push(itemPromise);
   });
@@ -55,7 +52,7 @@ async function fetchAndUpdate({ url }) {
 
   console.log({ feed, items: feed.items, results });
   return results;
-}
+};
 
 function prepPutItemPromise(putItemPromise, item) {
   const uuid = prepID(item);
@@ -80,7 +77,10 @@ function prepPutItemPromise(putItemPromise, item) {
     },
   };
   return putItemPromise(params)
-    .then((res) => res)
+    .then((res) => {
+      console.log(res);
+      return res;
+    })
     .catch((err) => {
       console.error(err);
       return err;

@@ -36,7 +36,7 @@
         },
         "fetchFeed": {
           "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
-          "s3Key": "amplify-builds/fetchFeed-5342434e48512f46366d-build.zip"
+          "s3Key": "amplify-builds/fetchFeed-4259434f333867376658-build.zip"
         },
         "sendVerificationCode": {
           "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
@@ -44,7 +44,7 @@
         },
         "checkFeeds": {
           "deploymentBucketName": "amplify-tsunamialert-dev-03533-deployment",
-          "s3Key": "amplify-builds/checkFeeds-42615331394e79752f2b-build.zip"
+          "s3Key": "amplify-builds/checkFeeds-632f304f443664485172-build.zip"
         }
       }
     },

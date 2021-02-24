@@ -5,32 +5,39 @@
 Amplify Params - DO NOT EDIT */
 
 const AWS = require('aws-sdk');
+const { promisify } = require('es6-promisify');
 
-const { FUNCTION_FETCHFEED_NAME } = process.env;
+const { FUNCTION_FETCHFEED_NAME, REGION } = process.env;
 
-AWS.config.update({ region: process.env.REGION });
+AWS.config.update({ region: REGION });
 
 const lambda = new AWS.Lambda({
-  region: process.env.REGION,
+  region: REGION,
 });
 
 const PWTC_ATOM = 'https://www.tsunami.gov/events/xml/PHEBAtom.xml';
-// const NTWC_ATOM = 'https://www.tsunami.gov/events/xml/PAAQAtom.xml';
+const NTWC_ATOM = 'https://www.tsunami.gov/events/xml/PAAQAtom.xml';
 
-exports.handler = async (_event, context) => {
-  lambda.invoke(
-    {
-      FunctionName: FUNCTION_FETCHFEED_NAME,
-      Payload: JSON.stringify({ url: PWTC_ATOM }, null, 2), // pass params
-    },
-    function (error, data) {
-      if (error) {
-        context.done('error', error);
-      }
-      if (data) {
-        context.succeed(data);
-      }
-    },
-  );
-  // await fetchFeed(NTWC_ATOM);
+exports.handler = async () => {
+  const feeds = [PWTC_ATOM, NTWC_ATOM];
+  const lambdaInvokePromise = promisify(lambda.invoke.bind(lambda));
+
+  const promises = [];
+  feeds.forEach((url) => {
+    promises.push(
+      lambdaInvokePromise({
+        FunctionName: FUNCTION_FETCHFEED_NAME,
+        InvocationType: 'Event',
+        Payload: JSON.stringify({ url }, null, 2),
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        }),
+    );
+  });
+
+  await Promise.all(promises);
 };
